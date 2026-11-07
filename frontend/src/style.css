@@ -322,11 +322,12 @@ svg {
   gap: 18px;
   padding: 18px 28px;
   border-bottom: 1px solid #e2e7dc;
-  background: #ffffffb8;
+  background: #ffffffe6;
   backdrop-filter: blur(10px);
   position: sticky;
   top: 0;
-  z-index: 20;
+  /* Above map overlays / Leaflet so Studio title stays on top while scrolling. */
+  z-index: 1200;
 }
 
 .workspace-bar-brand {
@@ -408,12 +409,9 @@ svg {
 }
 
 .map-stage-overlay {
-  position: relative;
-  z-index: 510;
-  display: flex;
-  justify-content: space-between;
-  align-items: stretch;
-  gap: 16px;
+  position: absolute;
+  inset: 0;
+  z-index: 450;
   padding: 14px;
   pointer-events: none;
   min-height: 620px;
@@ -431,12 +429,14 @@ svg {
 }
 
 .assess-dock {
-  align-self: flex-start;
-  flex: 0 1 300px;
-  max-width: 300px;
-  background: #fffffff2;
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: min(300px, calc(100% - 28px));
+  background: #fffffff7;
   padding: 14px !important;
-  z-index: 2;
+  /* Above the floating risk card and map chrome. */
+  z-index: 40;
 }
 
 .assess-dock.panel {
@@ -895,10 +895,13 @@ svg {
 }
 
 .hero-card {
-  align-self: flex-end;
-  flex: 0 1 340px;
-  max-width: 340px;
-  max-height: calc(100% - 12px);
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: min(340px, calc(100% - 28px));
+  /* Stay below the dock so we float on the map without covering controls. */
+  max-height: calc(100% - 168px);
+  overflow-x: hidden;
   overflow-y: auto;
   background: #fffffff5;
   display: flex;
@@ -906,7 +909,7 @@ svg {
   align-items: flex-start;
   padding: 14px !important;
   border-radius: 14px;
-  z-index: 1;
+  z-index: 20;
 }
 
 .hero-card h2 {
@@ -1196,7 +1199,7 @@ svg {
   position: absolute;
   left: 12px;
   bottom: 12px;
-  z-index: 500;
+  z-index: 15;
   display: flex;
   gap: 8px;
   align-items: flex-start;
@@ -2117,20 +2120,23 @@ td {
   }
 
   .map-stage-overlay {
+    position: relative;
+    inset: auto;
+    display: flex;
     flex-direction: column;
-    align-items: stretch;
+    gap: 12px;
     min-height: auto;
   }
 
   .assess-dock,
   .hero-card {
-    flex: 1 1 auto;
-    max-width: none;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
     width: 100%;
-    align-self: stretch;
-  }
-
-  .hero-card {
+    max-width: none;
     max-height: none;
   }
 
@@ -2171,7 +2177,7 @@ td {
     grid-template-columns: repeat(5, 1fr);
     background: var(--ink);
     border-top: 1px solid #2c484a;
-    z-index: 40;
+    z-index: 1200;
     padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
   }
 
