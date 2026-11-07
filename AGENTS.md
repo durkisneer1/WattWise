@@ -37,5 +37,11 @@ If the implementation tip moved, review commits and shared files, then integrate
 
 ## Ownership
 
-Alan — resident UI, preparation, presenter assets, UI/API integration.  
+Alan — resident UI, preparation, presenter assets, UI/API integration. 
 Teammate — weather/outage data, index validation, Rust risk API. Coordinate shared module edits explicitly.
+
+## Git identity (this machine)
+
+- Commits must use **Alan Perez** / `uhaop` (`50084395+uhaop@users.noreply.github.com`).
+- Do not author as `durkisneer1` or other teammate identities even if those appear in history.
+- See `.cursor/rules/git-identity.mdc`.

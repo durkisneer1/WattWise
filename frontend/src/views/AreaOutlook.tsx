@@ -18,7 +18,12 @@ import {
   coverageFor,
   type HorizonId,
 } from "../lib/coverage";
-import { freshnessCue, indexCue } from "../lib/motivators";
+import {
+  centerpointOutageUrl,
+  freshnessCue,
+  indexCue,
+  indexDrivers,
+} from "../lib/motivators";
 import { formatCentral } from "../lib/time";
 
 type Props = {
@@ -63,6 +68,10 @@ export function AreaOutlook({
   const points = current
     ? indexCue(risk?.index_value ?? null, risk?.index_scale ?? null)
     : null;
+  const drivers =
+    current && horizon === "24h"
+      ? indexDrivers(risk?.weather_features ?? null)
+      : null;
   const showMap = Boolean(selected);
   const mapLat = selected?.lat ?? 29.76;
   const mapLon = selected?.lon ?? -95.37;
@@ -236,6 +245,33 @@ export function AreaOutlook({
                     </div>
                   </div>
                   {points ? <p className="motivator-line">{points}</p> : null}
+                  {drivers ? (
+                    <ul className="driver-chips" aria-label="What drives this index">
+                      {drivers.map((d) => (
+                        <li
+                          key={d.id}
+                          className={
+                            "driver-chip" + (d.points > 0 ? " active" : "")
+                          }
+                        >
+                          <span className="driver-chip-top">
+                            <b>{d.label}</b>
+                            <em>
+                              +{d.points}/{d.maxPoints}
+                            </em>
+                          </span>
+                          <span>{d.detail}</span>
+                          <i
+                            className="driver-meter"
+                            aria-hidden
+                            style={{
+                              ["--driver-pct" as string]: `${(d.points / d.maxPoints) * 100}%`,
+                            }}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
                   <p className="risk-blurb">
                     Not an outage probability. Stress band: {risk.risk_band}.
                   </p>
@@ -349,6 +385,26 @@ export function AreaOutlook({
                     </strong>
                   </div>
                 </div>
+              </div>
+
+              <div className="panel utility-panel">
+                <div className="plan-heading">
+                  <h3>Utility context</h3>
+                  <span>CenterPoint · not WattWise</span>
+                </div>
+                <p>
+                  Weather stress is not the grid. Open the utility outage map
+                  near this reference point — restoration notes stay on
+                  CenterPoint’s site.
+                </p>
+                <a
+                  className="primary"
+                  href={centerpointOutageUrl(mapLat, mapLon)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open CenterPoint outage map
+                </a>
               </div>
 
               <div className="panel timeline-panel">

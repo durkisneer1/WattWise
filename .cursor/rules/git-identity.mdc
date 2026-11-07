@@ -1,0 +1,12 @@
+---
+description: Commit as the authenticated Alan/uhaop identity — never the teammate’s GitHub author
+alwaysApply: true
+---
+
+# Git identity
+
+- Author for this machine: **Alan Perez** (`uhaop`).
+- Email: `50084395+uhaop@users.noreply.github.com` (GitHub noreply).
+- `gh` is logged in as `uhaop`. Do **not** reuse teammate commit authors (e.g. `durkisneer1`) just because they appear in `git log`.
+- Prefer the configured `user.name` / `user.email` (global or repo-local). Only pass one-shot `-c user.name=… -c user.email=…` if config is missing — and then use Alan/uhaop, never another account.
+- Push UI work to `codex/wattwise-ui-presentation` only. Do not force-push the teammate’s `codex/wattwise-implementation` branch.

@@ -22,3 +22,65 @@ export function indexCue(indexValue: number | null, scale: number | null) {
   if (indexValue == null || scale == null) return null;
   return `${indexValue} of ${scale} weather stress points (not an outage probability).`;
 }
+
+export type IndexDriver = {
+  id: "wind" | "rain" | "temperature";
+  label: string;
+  points: number;
+  maxPoints: number;
+  detail: string;
+};
+
+/** Mirror of backend weather-index-v1 thresholds — display only, not a second scorer. */
+export function indexDrivers(
+  features: Risk["weather_features"],
+): IndexDriver[] | null {
+  if (!features) return null;
+  const wind =
+    features.max_gust_kmh >= 80
+      ? 4
+      : features.max_gust_kmh >= 60
+        ? 3
+        : features.max_gust_kmh >= 40
+          ? 2
+          : 0;
+  const rain =
+    features.precipitation_mm >= 75
+      ? 3
+      : features.precipitation_mm >= 25
+        ? 2
+        : 0;
+  const temperature =
+    features.min_temperature_c <= 0 || features.max_temperature_c >= 38
+      ? 2
+      : 0;
+  return [
+    {
+      id: "wind",
+      label: "Wind",
+      points: wind,
+      maxPoints: 4,
+      detail: `Peak gust ${features.max_gust_kmh.toFixed(0)} km/h`,
+    },
+    {
+      id: "rain",
+      label: "Rain",
+      points: rain,
+      maxPoints: 3,
+      detail: `${features.precipitation_mm.toFixed(1)} mm in window`,
+    },
+    {
+      id: "temperature",
+      label: "Temp",
+      points: temperature,
+      maxPoints: 2,
+      detail: `${features.min_temperature_c.toFixed(0)}–${features.max_temperature_c.toFixed(0)} °C`,
+    },
+  ];
+}
+
+export function centerpointOutageUrl(lat: number, lon: number) {
+  // CenterPoint's tracker is a full GIS app; open it with a maps query hint nearby.
+  // Restoration times still come only from the utility — never invented here.
+  return `https://gisoutagetracker.azurewebsites.net/#${lat.toFixed(4)},${lon.toFixed(4)},12`;
+}

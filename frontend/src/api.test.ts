@@ -1,6 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { RiskSchema, PlanSchema, MethodSchema, freshness } from "./api";
-import { freshnessCue, indexCue, minutesUntilExpiry } from "./lib/motivators";
+import {
+  freshnessCue,
+  indexCue,
+  indexDrivers,
+  minutesUntilExpiry,
+} from "./lib/motivators";
+import { householdChecklistDelta } from "./lib/householdDelta";
+import { HOUSEHOLD_PRESETS } from "./lib/studioSamples";
 import riskFixture from "../../tests/fixtures/risk.json";
 import planFixture from "../../tests/fixtures/plan.json";
 describe("Rust to frontend contracts (synthetic test fixtures only)", () => {
@@ -50,5 +57,21 @@ describe("Rust to frontend contracts (synthetic test fixtures only)", () => {
     expect(indexCue(null, 9)).toBeNull();
     expect(minutesUntilExpiry(r, Date.parse(r.expires_at) - 120000)).toBe(2);
     expect(freshnessCue(r, "stale")).toMatch(/expired/i);
+  });
+  it("shows index drivers that sum to the fixture score", () => {
+    const r = RiskSchema.parse(riskFixture);
+    const drivers = indexDrivers(r.weather_features);
+    expect(drivers).not.toBeNull();
+    expect(drivers!.reduce((n, d) => n + d.points, 0)).toBe(r.index_value);
+  });
+  it("shows household A→B checklist growth without touching area risk", () => {
+    const delta = householdChecklistDelta(
+      HOUSEHOLD_PRESETS[0].household,
+      HOUSEHOLD_PRESETS[1].household,
+    );
+    expect(delta.countB).toBeGreaterThan(delta.countA);
+    expect(delta.onlyB.map((a) => a.id)).toEqual(
+      expect.arrayContaining(["equipment_plan", "support_network"]),
+    );
   });
 });

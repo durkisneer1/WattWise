@@ -14,6 +14,7 @@ import {
   Play,
 } from "lucide-react";
 import type { Household } from "../api";
+import { householdChecklistDelta } from "../lib/householdDelta";
 import {
   COLOR_SYSTEM,
   DEMO_BEATS,
@@ -46,6 +47,10 @@ export function HackathonStudio({
   const [appliedPreset, setAppliedPreset] = useState<string | null>(null);
   const [liveCounty, setLiveCounty] = useState<string>(DEMO_COUNTIES[0].fips);
   const [samplesOpen, setSamplesOpen] = useState(false);
+  const householdDelta = householdChecklistDelta(
+    HOUSEHOLD_PRESETS[0].household,
+    HOUSEHOLD_PRESETS[1].household,
+  );
 
   function goTour(target: (typeof PRODUCT_TOUR)[number]["target"]) {
     switch (target) {
@@ -203,6 +208,27 @@ export function HackathonStudio({
             </div>
           ))}
         </div>
+        <aside className="studio-delta" aria-label="Household checklist delta">
+          <p>
+            <strong>
+              Checklist size: {householdDelta.countA} → {householdDelta.countB}{" "}
+              items
+            </strong>{" "}
+            when you flip A to B. Area weather index stays fixed.
+          </p>
+          {householdDelta.onlyB.length > 0 ? (
+            <p>
+              B adds:{" "}
+              {householdDelta.onlyB.map((a) => a.title).join(" · ")}
+            </p>
+          ) : null}
+          {householdDelta.onlyA.length > 0 ? (
+            <p>
+              A-only:{" "}
+              {householdDelta.onlyA.map((a) => a.title).join(" · ")}
+            </p>
+          ) : null}
+        </aside>
       </section>
 
       <section className="panel panel-muted">
