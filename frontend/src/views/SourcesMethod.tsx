@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ExternalLink, Info } from "lucide-react";
 import { MethodSchema, request, type Method, type Risk } from "../api";
 import { formatCentral } from "../lib/time";
+import { displayEvidence } from "../lib/units";
 
 type Props = {
   risk: Risk | null;
@@ -48,42 +49,39 @@ export function SourcesMethod({ risk, status }: Props) {
               {methodError}
             </p>
           ) : null}
-          {method ? (
+          {method || methodError ? (
             <dl className="method-dl">
               <dt>Wind gusts</dt>
-              <dd>{method.wind}</dd>
+              <dd>
+                Peak gust: &lt;25 mph = 0; 25–&lt;37 = 2; 37–&lt;50 = 3; ≥50 = 4
+                points (scored from Open-Meteo km/h fields).
+              </dd>
               <dt>Precipitation over 24 hours</dt>
-              <dd>{method.rain}</dd>
+              <dd>
+                {method?.rain ??
+                  "<25 mm = 0; 25–<75 = 2; ≥75 = 3 points."}
+              </dd>
               <dt>Temperature extremes</dt>
-              <dd>{method.temperature}</dd>
+              <dd>
+                Minimum ≤32 °F or maximum ≥100 °F = 2 points; otherwise 0
+                (scored from Open-Meteo °C fields).
+              </dd>
               <dt>Index bands</dt>
-              <dd>{method.bands}</dd>
+              <dd>
+                {method?.bands ??
+                  "0–2 lower, 3–5 elevated, 6–9 high weather stress. Project-chosen thresholds; not calibrated to outages."}
+              </dd>
               <dt>Scale</dt>
-              <dd>0–{method.scale} weather index points</dd>
+              <dd>0–{method?.scale ?? 9} weather index points</dd>
             </dl>
-          ) : !methodError ? (
-            <p className="section-lead">Loading method rules…</p>
           ) : (
-            <dl className="method-dl">
-              <dt>Wind gusts</dt>
-              <dd>
-                Peak gust: &lt;40 km/h = 0; 40–&lt;60 = 2; 60–&lt;80 = 3; ≥80 =
-                4 points.
-              </dd>
-              <dt>Precipitation over 24 hours</dt>
-              <dd>&lt;25 mm = 0; 25–&lt;75 = 2; ≥75 = 3 points.</dd>
-              <dt>Temperature extremes</dt>
-              <dd>Minimum ≤0 °C or maximum ≥38 °C = 2 points; otherwise 0.</dd>
-              <dt>Index bands</dt>
-              <dd>
-                0–2 lower, 3–5 elevated, 6–9 high weather stress. Project-chosen
-                thresholds; not calibrated to outages.
-              </dd>
-            </dl>
+            <p className="section-lead">Loading method rules…</p>
           )}
           <p className="plan-note">
             Probability is always null. Lower weather stress does not rule out
             an outage. No trained outage model is running in this release.
+            Resident screens show mph and °F; the index itself still uses the
+            documented metric thresholds.
           </p>
         </section>
 
@@ -137,7 +135,7 @@ export function SourcesMethod({ risk, status }: Props) {
               <h4 className="subhead">Evidence strings</h4>
               {risk.evidence.map((e) => (
                 <p key={e} className="plan-note">
-                  {e}
+                  {displayEvidence(e)}
                 </p>
               ))}
             </div>

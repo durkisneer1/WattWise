@@ -15,6 +15,7 @@ import {
   indexDrivers,
 } from "../lib/motivators";
 import type { SampleWeather } from "../lib/studioSamples";
+import { cToF, formatF, formatMph, kmhToMph } from "../lib/units";
 
 type Props = {
   sample: SampleWeather;
@@ -192,20 +193,23 @@ export function SampleAreaPreview({ sample, onGoPrepare }: Props) {
             {
               icon: <Wind />,
               label: horizon === "7d" ? "24h peak gust" : "Peak gust",
-              value: sample.maxGustKmh,
-              unit: "km/h",
+              value: kmhToMph(sample.maxGustKmh),
+              unit: "mph",
+              digits: 0,
             },
             {
               icon: <Droplets />,
               label: horizon === "7d" ? "24h precip" : "Precipitation",
               value: sample.precipitationMm,
               unit: "mm",
+              digits: 1,
             },
             {
               icon: <Thermometer />,
               label: horizon === "7d" ? "24h high temp" : "High temp",
-              value: sample.maxTemperatureC,
-              unit: "°C",
+              value: cToF(sample.maxTemperatureC),
+              unit: "°F",
+              digits: 0,
             },
           ].map((m) => (
             <div className="metric-tile" key={m.label}>
@@ -213,7 +217,7 @@ export function SampleAreaPreview({ sample, onGoPrepare }: Props) {
               <div>
                 <span>{m.label}</span>
                 <strong>
-                  {m.value.toFixed(1)} <small>{m.unit}</small>
+                  {m.value.toFixed(m.digits)} <small>{m.unit}</small>
                 </strong>
               </div>
             </div>
@@ -268,11 +272,11 @@ export function SampleAreaPreview({ sample, onGoPrepare }: Props) {
               {sample.daily.map((day) => (
                 <article key={day.date} className="daily-card" role="listitem">
                   <strong>{formatDayLabel(day.date)}</strong>
-                  <span>Gust {day.max_gust_kmh.toFixed(0)} km/h</span>
+                  <span>Gust {formatMph(day.max_gust_kmh)} mph</span>
                   <span>Rain {day.precipitation_mm.toFixed(1)} mm</span>
                   <span>
-                    {day.min_temperature_c.toFixed(0)}–
-                    {day.max_temperature_c.toFixed(0)} °C
+                    {formatF(day.min_temperature_c)}–
+                    {formatF(day.max_temperature_c)} °F
                   </span>
                 </article>
               ))}

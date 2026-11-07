@@ -25,6 +25,7 @@ import {
   indexDrivers,
 } from "../lib/motivators";
 import { formatCentral } from "../lib/time";
+import { formatF, formatMph, kmhToMph, cToF } from "../lib/units";
 
 type Props = {
   county: string;
@@ -339,8 +340,13 @@ export function AreaOutlook({
               {
                 icon: <Wind />,
                 label: horizon === "7d" ? "24h peak gust" : "Peak gust",
-                value: current ? risk.weather_features?.max_gust_kmh : null,
-                unit: "km/h",
+                value: current
+                  ? risk.weather_features?.max_gust_kmh != null
+                    ? kmhToMph(risk.weather_features.max_gust_kmh)
+                    : null
+                  : null,
+                unit: "mph",
+                digits: 0,
               },
               {
                 icon: <Droplets />,
@@ -349,14 +355,18 @@ export function AreaOutlook({
                   ? risk.weather_features?.precipitation_mm
                   : null,
                 unit: "mm",
+                digits: 1,
               },
               {
                 icon: <Thermometer />,
                 label: horizon === "7d" ? "24h high temp" : "High temp",
                 value: current
-                  ? risk.weather_features?.max_temperature_c
+                  ? risk.weather_features?.max_temperature_c != null
+                    ? cToF(risk.weather_features.max_temperature_c)
+                    : null
                   : null,
-                unit: "°C",
+                unit: "°F",
+                digits: 0,
               },
             ].map((m) => (
               <div className="metric-tile" key={m.label}>
@@ -364,7 +374,7 @@ export function AreaOutlook({
                 <div>
                   <span>{m.label}</span>
                   <strong>
-                    {m.value != null ? m.value.toFixed(1) : "—"}{" "}
+                    {m.value != null ? m.value.toFixed(m.digits) : "—"}{" "}
                     <small>{m.unit}</small>
                   </strong>
                 </div>
@@ -439,14 +449,14 @@ export function AreaOutlook({
                     >
                       <strong>{formatDayLabel(day.date)}</strong>
                       <span>
-                        Gust {day.max_gust_kmh.toFixed(0)} km/h
+                        Gust {formatMph(day.max_gust_kmh)} mph
                       </span>
                       <span>
                         Rain {day.precipitation_mm.toFixed(1)} mm
                       </span>
                       <span>
-                        {day.min_temperature_c.toFixed(0)}–
-                        {day.max_temperature_c.toFixed(0)} °C
+                        {formatF(day.min_temperature_c)}–
+                        {formatF(day.max_temperature_c)} °F
                       </span>
                     </article>
                   ))}

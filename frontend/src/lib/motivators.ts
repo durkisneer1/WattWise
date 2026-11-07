@@ -1,4 +1,5 @@
 import type { Risk } from "../api";
+import { formatF, formatMph } from "./units";
 
 /** Honest numeric cues — never framed as outage probability or safety score. */
 export function minutesUntilExpiry(risk: Risk, now = Date.now()) {
@@ -60,7 +61,7 @@ export function indexDrivers(
       label: "Wind",
       points: wind,
       maxPoints: 4,
-      detail: `Peak gust ${features.max_gust_kmh.toFixed(0)} km/h`,
+      detail: `Peak gust ${formatMph(features.max_gust_kmh)} mph`,
     },
     {
       id: "rain",
@@ -74,7 +75,7 @@ export function indexDrivers(
       label: "Temp",
       points: temperature,
       maxPoints: 2,
-      detail: `${features.min_temperature_c.toFixed(0)}–${features.max_temperature_c.toFixed(0)} °C`,
+      detail: `${formatF(features.min_temperature_c)}–${formatF(features.max_temperature_c)} °F`,
     },
   ];
 }

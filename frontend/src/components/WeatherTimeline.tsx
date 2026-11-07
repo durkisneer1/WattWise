@@ -1,5 +1,6 @@
 import React from "react";
 import { formatCentral, formatCentralHour } from "../lib/time";
+import { formatF, formatMph, kmhToMph } from "../lib/units";
 
 type Hour = {
   time: string;
@@ -16,17 +17,18 @@ type Props = {
 export function WeatherTimeline({ hourly, validFrom }: Props) {
   if (hourly.length === 0) return null;
 
-  const maxGust = Math.max(40, ...hourly.map((h) => h.gust_kmh));
+  const gustMph = hourly.map((h) => kmhToMph(h.gust_kmh));
+  const maxGust = Math.max(25, ...gustMph);
   const maxRain = Math.max(1, ...hourly.map((h) => h.precipitation_mm));
   const width = 600;
   const height = 120;
   const pad = 8;
   const step = width / Math.max(1, hourly.length - 1);
 
-  const gustPath = hourly
-    .map((h, i) => {
+  const gustPath = gustMph
+    .map((mph, i) => {
       const x = i * step;
-      const y = height - pad - (h.gust_kmh / maxGust) * (height - pad * 2);
+      const y = height - pad - (mph / maxGust) * (height - pad * 2);
       return `${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`;
     })
     .join(" ");
@@ -34,7 +36,7 @@ export function WeatherTimeline({ hourly, validFrom }: Props) {
   return (
     <div className="weather-timeline">
       <div className="timeline-legend">
-        <span className="legend-gust">Wind gust (km/h)</span>
+        <span className="legend-gust">Wind gust (mph)</span>
         <span className="legend-rain">Rain bars (mm)</span>
         <span>Central Time</span>
       </div>
@@ -54,7 +56,8 @@ export function WeatherTimeline({ hourly, validFrom }: Props) {
           />
         ))}
         {hourly.map((h, i) => {
-          const barH = (h.precipitation_mm / maxRain) * (height - pad * 2) * 0.45;
+          const barH =
+            (h.precipitation_mm / maxRain) * (height - pad * 2) * 0.45;
           const x = i * step;
           return (
             <rect
@@ -69,13 +72,12 @@ export function WeatherTimeline({ hourly, validFrom }: Props) {
           );
         })}
         <path className="gust-line" d={gustPath} fill="none" />
-        {hourly.map((h, i) => {
+        {gustMph.map((mph, i) => {
           if (i % 4 !== 0 && i !== hourly.length - 1) return null;
-          const y =
-            height - pad - (h.gust_kmh / maxGust) * (height - pad * 2);
+          const y = height - pad - (mph / maxGust) * (height - pad * 2);
           return (
             <circle
-              key={h.time + "-pt"}
+              key={hourly[i].time + "-pt"}
               className="gust-point"
               cx={i * step}
               cy={y}
@@ -85,7 +87,11 @@ export function WeatherTimeline({ hourly, validFrom }: Props) {
         })}
       </svg>
       <div className="timeline-axis">
-        <span>{validFrom ? formatCentral(validFrom) : formatCentralHour(hourly[0].time)}</span>
+        <span>
+          {validFrom
+            ? formatCentral(validFrom)
+            : formatCentralHour(hourly[0].time)}
+        </span>
         <span>+24 hours</span>
       </div>
       <details className="timeline-table">
@@ -95,18 +101,18 @@ export function WeatherTimeline({ hourly, validFrom }: Props) {
             <thead>
               <tr>
                 <th>Central time</th>
-                <th>Gust km/h</th>
+                <th>Gust mph</th>
                 <th>Rain mm</th>
-                <th>Temp °C</th>
+                <th>Temp °F</th>
               </tr>
             </thead>
             <tbody>
               {hourly.map((h) => (
                 <tr key={h.time}>
                   <td>{formatCentral(h.time)}</td>
-                  <td>{h.gust_kmh}</td>
+                  <td>{formatMph(h.gust_kmh)}</td>
                   <td>{h.precipitation_mm}</td>
-                  <td>{h.temperature_c}</td>
+                  <td>{formatF(h.temperature_c)}</td>
                 </tr>
               ))}
             </tbody>
