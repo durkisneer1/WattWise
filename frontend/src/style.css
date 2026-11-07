@@ -359,11 +359,16 @@ svg {
   max-width: 240px;
   text-align: right;
   font-weight: 650;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--line);
 }
 
 .workspace-status.muted {
   color: var(--muted);
   font-weight: 500;
+  background: transparent;
 }
 
 .workspace-main {
@@ -715,12 +720,19 @@ svg {
   gap: 10px;
   align-items: flex-start;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--paper);
   border: 1px solid var(--line);
   font-size: 13px;
   color: var(--ink);
+  text-align: left;
   animation: driver-chip-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.studio-morph-item span {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.4;
 }
 
 .studio-morph-item:nth-child(2) {
@@ -795,7 +807,7 @@ svg {
   gap: 12px;
   align-items: flex-start;
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--canvas);
   border: 1px solid var(--line);
 }
@@ -993,7 +1005,7 @@ svg {
   gap: 12px;
   align-items: center;
   padding: 16px 18px;
-  border-radius: 16px;
+  border-radius: 14px;
   background: #fff;
   border: 1px solid var(--line);
   box-shadow: 0 8px 24px #122a330d;
@@ -1082,13 +1094,16 @@ svg {
   background: var(--ink);
   color: #fff;
   padding: 11px 16px;
+  min-height: 42px;
   border-radius: 10px;
   font-size: 13px;
   font-weight: 700;
+  text-decoration: none;
 }
 
 .primary:hover {
   background: var(--ink-soft);
+  text-decoration: none;
 }
 
 .primary-accent {
@@ -1107,6 +1122,7 @@ svg {
   font-size: 12px;
   font-weight: 700;
   padding: 6px 0;
+  min-height: 32px;
 }
 
 .location-box label {
@@ -2720,23 +2736,34 @@ td {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+  align-items: stretch;
 }
 
 .preset-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 14px;
   background: #fff;
+  height: 100%;
 }
 
 .preset-card h4 {
   font-size: 14px;
   font-weight: 750;
-  margin-bottom: 6px;
+  margin-bottom: 0;
+}
+
+.preset-card .plan-note {
+  margin-top: 0;
+  flex: 1;
 }
 
 .preset-card .primary {
-  margin-top: 10px;
+  margin-top: auto;
+  width: 100%;
 }
 
 .preset-applied {
@@ -2787,13 +2814,18 @@ td {
 .studio-run .studio-live-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 10px;
+  gap: 12px;
   align-items: end;
   margin-top: 12px;
 }
 
+.studio-run .studio-live-row .support-field {
+  margin: 0;
+}
+
 .studio-run .studio-live-row .assess-go {
   height: 42px;
+  align-self: end;
 }
 
 .studio-county-chips {

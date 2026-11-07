@@ -174,7 +174,7 @@ export function HackathonStudio({
               <h3>
                 <Play size={16} aria-hidden /> Run a live area check
               </h3>
-              <span>Real Open-Meteo · not a sample</span>
+              <span>Live forecast · not a sample</span>
             </div>
             <p className="plan-note" style={{ marginTop: 0 }}>
               Pick a county, then jump straight into Area outlook and fetch the

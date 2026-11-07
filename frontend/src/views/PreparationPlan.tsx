@@ -89,8 +89,8 @@ export function PreparationPlan({
     <div className="prep-layout">
       <header className="prep-intro">
         <div>
-          <p className="eyebrow">Preparation</p>
-          <h2>Household priorities</h2>
+          <p className="eyebrow">Household plan</p>
+          <h2>Priorities for this forecast</h2>
           <p>
             Answers reorder this checklist only — they never change the area
             weather index.
