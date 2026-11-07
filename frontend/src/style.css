@@ -411,11 +411,11 @@ svg {
   position: relative;
   z-index: 510;
   display: grid;
-  grid-template-columns: minmax(280px, 360px) minmax(280px, 400px);
-  gap: 14px;
+  grid-template-columns: minmax(240px, 300px) minmax(240px, 320px);
+  gap: 12px;
   align-items: start;
   justify-content: space-between;
-  padding: 18px;
+  padding: 14px;
   pointer-events: none;
   min-height: 560px;
 }
@@ -427,53 +427,89 @@ svg {
 .assess-dock,
 .hero-card,
 .float-card {
-  box-shadow: 0 16px 40px #122a3333;
+  box-shadow: 0 12px 28px #122a3328;
   backdrop-filter: blur(8px);
 }
 
 .assess-dock {
   align-self: start;
   background: #fffffff2;
+  padding: 14px !important;
+}
+
+.assess-dock.panel {
+  border-radius: 14px;
 }
 
 .dock-kicker {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 750;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+}
+
+.assess-controls {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.assess-controls .location-row {
+  min-width: 0;
+  min-height: 38px;
+  padding: 0 10px;
+}
+
+.assess-controls .location-row select {
+  font-size: 13px;
+  font-weight: 650;
+  padding: 8px 0;
+}
+
+.assess-go {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 14px;
+  font-size: 13px;
+  white-space: nowrap;
+  justify-content: center;
 }
 
 .horizon-tabs {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin-top: 14px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  margin-top: 10px;
+  padding: 3px;
+  border-radius: 10px;
+  background: #eef2f0;
+  border: 1px solid var(--line);
 }
 
 .horizon-tab {
-  border: 1px solid var(--line);
-  background: #f3f5f1;
-  color: var(--ink);
-  border-radius: 10px;
-  padding: 8px 6px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  border-radius: 8px;
+  padding: 6px 8px;
   font-size: 12px;
   font-weight: 650;
+  line-height: 1.2;
   cursor: pointer;
 }
 
 .horizon-tab.active {
   background: var(--ink);
-  border-color: var(--ink);
   color: #fff;
 }
 
 .horizon-detail {
-  margin: 8px 0 0;
-  font-size: 12px;
+  margin: 6px 0 0;
+  font-size: 11px;
   color: var(--muted);
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 .daily-strip {
@@ -522,7 +558,13 @@ svg {
 }
 
 .location-row.tight {
-  padding: 6px 6px 6px 12px;
+  padding: 0 10px;
+}
+
+.location-note {
+  margin-top: 6px !important;
+  font-size: 11px !important;
+  line-height: 1.35;
 }
 
 .hero-card {
@@ -530,30 +572,43 @@ svg {
   justify-self: end;
   background: #fffffff5;
   display: flex;
-  gap: 14px;
+  gap: 10px;
   align-items: flex-start;
+  padding: 14px !important;
+  border-radius: 14px;
+  max-width: 300px;
 }
 
 .hero-card h2 {
-  font-size: 26px;
-  letter-spacing: -0.04em;
+  font-size: 17px;
+  letter-spacing: -0.03em;
   font-weight: 750;
-  line-height: 1.15;
-  margin: 4px 0 8px;
+  line-height: 1.25;
+  margin: 0 0 6px;
+}
+
+.hero-card-empty .empty-icon {
+  padding: 8px;
+  flex-shrink: 0;
 }
 
 .hero-card > div > p,
 .risk-blurb {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--muted);
-  line-height: 1.55;
+  line-height: 1.45;
+  margin: 0;
 }
 
 .float-card {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-width: 400px;
+  max-width: 320px;
+}
+
+.float-card.risk-card h2 {
+  font-size: 18px;
 }
 
 .dock-actions {
@@ -740,8 +795,6 @@ svg {
 
 .location-note {
   display: block;
-  margin-top: 8px;
-  font-size: 12px;
   color: var(--muted);
 }
 
@@ -2255,43 +2308,132 @@ td {
   line-height: 1.4;
 }
 
-.studio-county-grid {
+.studio-run .studio-live-row {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
   margin-top: 12px;
 }
 
-.studio-county-card {
-  padding: 14px;
-  border-radius: 12px;
-  background: #fff;
-  border: 1px solid var(--line);
+.studio-run .studio-live-row .assess-go {
+  height: 42px;
 }
 
-.studio-county-card h4 {
-  margin: 0 0 4px;
-  font-size: 14px;
-  font-weight: 750;
-  color: var(--ink);
-}
-
-.studio-county-card > p {
-  margin: 0 0 10px;
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.45;
-}
-
-.studio-county-actions {
+.studio-county-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin-top: 12px;
+}
+
+.studio-chip {
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--ink-soft);
+}
+
+.studio-chip.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+.studio-tour {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.studio-tour-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+}
+
+.studio-step {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.studio-tour-card h4 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.studio-tour-card p {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.studio-quick-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.demo-beats.compact li {
+  padding: 8px 0;
+}
+
+.studio-samples summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 750;
+}
+
+.studio-samples summary::-webkit-details-marker {
+  display: none;
+}
+
+.studio-samples summary span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.studio-samples summary small {
+  font-weight: 500;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.studio-samples .sample-tabs {
+  margin-top: 14px;
 }
 
 @media (max-width: 720px) {
-  .studio-county-grid {
+  .studio-tour,
+  .studio-run .studio-live-row {
     grid-template-columns: 1fr;
+  }
+
+  .studio-run .studio-live-row .assess-go {
+    width: 100%;
+    justify-content: center;
   }
 }
 

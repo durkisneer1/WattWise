@@ -47,7 +47,7 @@ export function coverageFor(fips: string) {
   return COUNTIES.find((c) => c.fips === fips) ?? null;
 }
 
-export type HorizonId = "24h" | "7d" | "30d";
+export type HorizonId = "24h" | "7d";
 
 export const HORIZONS: {
   id: HorizonId;
@@ -57,16 +57,11 @@ export const HORIZONS: {
   {
     id: "24h",
     label: "24 hours",
-    detail: "Scored weather-index window (live)",
+    detail: "Scored index for the next 24 hours",
   },
   {
     id: "7d",
     label: "7 days",
-    detail: "Daily outlook strip — not a weekly outage score",
-  },
-  {
-    id: "30d",
-    label: "30 days",
-    detail: "Not available in weather-index-v1",
+    detail: "Daily strip — not a weekly outage score",
   },
 ];

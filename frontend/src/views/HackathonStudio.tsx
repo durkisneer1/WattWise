@@ -9,6 +9,9 @@ import {
   MapPinned,
   LifeBuoy,
   ArrowRight,
+  House,
+  BookOpen,
+  Play,
 } from "lucide-react";
 import type { Household } from "../api";
 import {
@@ -16,6 +19,7 @@ import {
   DEMO_BEATS,
   DEMO_COUNTIES,
   HOUSEHOLD_PRESETS,
+  PRODUCT_TOUR,
   SAMPLE_WEATHER,
   TWO_PERSON_CHECKS,
   type SampleWeather,
@@ -23,7 +27,7 @@ import {
 
 type Props = {
   onApplyHousehold: (household: Household) => void;
-  onApplyCounty: (fips: string) => void;
+  onAssessCounty: (fips: string) => void;
   onGoPrepare: () => void;
   onGoArea: () => void;
   onGoSupport: () => void;
@@ -32,7 +36,7 @@ type Props = {
 
 export function HackathonStudio({
   onApplyHousehold,
-  onApplyCounty,
+  onAssessCounty,
   onGoPrepare,
   onGoArea,
   onGoSupport,
@@ -40,40 +44,175 @@ export function HackathonStudio({
 }: Props) {
   const [sample, setSample] = useState<SampleWeather>(SAMPLE_WEATHER[1]);
   const [appliedPreset, setAppliedPreset] = useState<string | null>(null);
-  const [rehearsedCounty, setRehearsedCounty] = useState<string | null>(null);
+  const [liveCounty, setLiveCounty] = useState<string>(DEMO_COUNTIES[0].fips);
+  const [samplesOpen, setSamplesOpen] = useState(false);
+
+  function goTour(target: (typeof PRODUCT_TOUR)[number]["target"]) {
+    switch (target) {
+      case "area":
+        onGoArea();
+        return;
+      case "prepare":
+        onGoPrepare();
+        return;
+      case "support":
+        onGoSupport();
+        return;
+      case "method":
+        onGoMethod();
+        return;
+      default: {
+        const _exhaustive: never = target;
+        return _exhaustive;
+      }
+    }
+  }
+
+  function runLiveCheck() {
+    onAssessCounty(liveCounty);
+  }
 
   return (
     <div className="stack studio">
-      <div className="studio-banner" role="status">
-        <AlertTriangle size={18} aria-hidden />
-        <div>
-          <strong>Presentation mode — samples only</strong>
-          <p>
-            Weather cards below are labeled illustrations for rehearsal and
-            offline backup. They are never sent to the live API and never
-            replace a missing forecast. County jump buttons and household
-            presets only set session UI state for the live resident flows.
-          </p>
+      <header className="studio-hero">
+        <div className="studio-banner" role="status">
+          <AlertTriangle size={18} aria-hidden />
+          <div>
+            <strong>Hackathon Studio · presentation sandbox</strong>
+            <p>
+              Jump into the live resident product, compare fictional households,
+              and keep labeled sample weather for offline backup. Samples never
+              replace a missing live forecast.
+            </p>
+          </div>
         </div>
-      </div>
+      </header>
 
-      <p className="section-lead">
-        Rehearse against the current product: multi-county Area outlook,
-        24h / 7d / 30d horizons, unified preparation checklist, and
-        location-scoped Local support. Prefer live fetches when the network
-        works; keep{" "}
-        <code>docs/screenshots/wattwise-desktop.jpg</code> as a recorded
-        fallback with its November 7, 2026 timestamp.
-      </p>
+      <section className="panel studio-run">
+        <div className="plan-heading">
+          <h3>
+            <Play size={16} aria-hidden /> Run a live area check
+          </h3>
+          <span>Real Open-Meteo · not a sample</span>
+        </div>
+        <p className="plan-note" style={{ marginTop: 0 }}>
+          Pick a county, then jump straight into Area outlook and fetch the
+          weather index. After it loads, flip <b>24 hours</b> / <b>7 days</b> in
+          the dock.
+        </p>
+        <div className="studio-live-row">
+          <label className="support-field">
+            <span>County</span>
+            <select
+              value={liveCounty}
+              onChange={(e) => setLiveCounty(e.target.value)}
+            >
+              {DEMO_COUNTIES.map((c) => (
+                <option key={c.fips} value={c.fips}>
+                  {c.label} · {c.tip}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            className="primary primary-accent assess-go"
+            onClick={runLiveCheck}
+          >
+            Check area live <ArrowRight size={16} aria-hidden />
+          </button>
+        </div>
+        <div className="studio-county-chips" role="list">
+          {DEMO_COUNTIES.map((c) => (
+            <button
+              key={c.fips}
+              type="button"
+              role="listitem"
+              className={
+                "studio-chip" + (liveCounty === c.fips ? " active" : "")
+              }
+              onClick={() => setLiveCounty(c.fips)}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+      </section>
 
       <section className="panel">
         <div className="plan-heading">
           <h3>
-            <Clock size={16} aria-hidden /> Four-minute demo beats
+            <MapPinned size={16} aria-hidden /> Product walkthrough
           </h3>
-          <span>Synced to current UI</span>
+          <span>Four stops judges should see</span>
         </div>
-        <ol className="demo-beats">
+        <div className="studio-tour">
+          {PRODUCT_TOUR.map((stop) => (
+            <article key={stop.id} className="studio-tour-card">
+              <span className="studio-step">{stop.step}</span>
+              <div>
+                <h4>{stop.title}</h4>
+                <p>{stop.body}</p>
+                <button
+                  type="button"
+                  className="primary"
+                  onClick={() => goTour(stop.target)}
+                >
+                  {stop.cta} <ArrowRight size={14} aria-hidden />
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="plan-heading">
+          <h3>
+            <Users size={16} aria-hidden /> Compare households
+          </h3>
+          <span>Preparation only · area index stays fixed</span>
+        </div>
+        <div className="preset-grid">
+          {HOUSEHOLD_PRESETS.map((preset) => (
+            <div key={preset.id} className="preset-card">
+              <h4>{preset.label}</h4>
+              <ul className="plain-list">
+                <li>Backup power: {preset.household.backup_power}</li>
+                <li>Equipment: {preset.household.equipment}</li>
+                <li>Transportation: {preset.household.transportation}</li>
+              </ul>
+              <p className="plan-note">{preset.note}</p>
+              <button
+                type="button"
+                className="primary primary-accent"
+                onClick={() => {
+                  onApplyHousehold(preset.household);
+                  setAppliedPreset(preset.id);
+                  onGoPrepare();
+                }}
+              >
+                <House size={15} aria-hidden /> Apply & open prepare
+              </button>
+              {appliedPreset === preset.id ? (
+                <p className="preset-applied">
+                  <CheckCircle2 size={14} aria-hidden /> Applied to session
+                  answers
+                </p>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="panel panel-muted">
+        <div className="plan-heading">
+          <h3>
+            <Clock size={16} aria-hidden /> Four-minute beats
+          </h3>
+          <span>docs/demo.md</span>
+        </div>
+        <ol className="demo-beats compact">
           {DEMO_BEATS.map((beat) => (
             <li key={beat.time}>
               <strong>{beat.time}</strong>
@@ -81,74 +220,29 @@ export function HackathonStudio({
             </li>
           ))}
         </ol>
+        <div className="studio-quick-links">
+          <button type="button" className="text-button" onClick={onGoSupport}>
+            <LifeBuoy size={14} aria-hidden /> Local support
+          </button>
+          <button type="button" className="text-button" onClick={onGoMethod}>
+            <BookOpen size={14} aria-hidden /> Sources & method
+          </button>
+        </div>
       </section>
 
-      <section className="panel panel-muted">
-        <div className="plan-heading">
-          <h3>
-            <MapPinned size={16} aria-hidden /> Live county rehearsal
-          </h3>
-          <span>Sets session county · not a sample forecast</span>
-        </div>
-        <p className="plan-note" style={{ marginTop: 0 }}>
-          These jump into the real Area or Local support views with the selected
-          FIPS. Weather still comes from Open-Meteo when you press Check area.
-        </p>
-        <div className="studio-county-grid">
-          {DEMO_COUNTIES.map((c) => (
-            <div key={c.fips} className="studio-county-card">
-              <h4>{c.label}</h4>
-              <p>{c.tip}</p>
-              <div className="studio-county-actions">
-                <button
-                  type="button"
-                  className="primary primary-accent"
-                  onClick={() => {
-                    onApplyCounty(c.fips);
-                    setRehearsedCounty(c.fips);
-                    onGoArea();
-                  }}
-                >
-                  Area <ArrowRight size={14} aria-hidden />
-                </button>
-                <button
-                  type="button"
-                  className="primary"
-                  onClick={() => {
-                    onApplyCounty(c.fips);
-                    setRehearsedCounty(c.fips);
-                    onGoSupport();
-                  }}
-                >
-                  <LifeBuoy size={14} aria-hidden /> Support
-                </button>
-              </div>
-              {rehearsedCounty === c.fips ? (
-                <p className="preset-applied">
-                  <CheckCircle2 size={14} aria-hidden /> Session county set to{" "}
-                  {c.fips}
-                </p>
-              ) : null}
-            </div>
-          ))}
-        </div>
-        <button
-          type="button"
-          className="text-button"
-          style={{ marginTop: 12 }}
-          onClick={onGoMethod}
-        >
-          Open Sources & method
-        </button>
-      </section>
-
-      <section className="panel">
-        <div className="plan-heading">
-          <h3>
-            <Presentation size={16} aria-hidden /> Sample weather scenarios
-          </h3>
-          <span>Not live data</span>
-        </div>
+      <details
+        className="panel studio-samples"
+        open={samplesOpen}
+        onToggle={(e) =>
+          setSamplesOpen((e.target as HTMLDetailsElement).open)
+        }
+      >
+        <summary>
+          <span>
+            <Presentation size={16} aria-hidden /> Offline sample weather
+            <small>Labeled illustrations · never a silent live fallback</small>
+          </span>
+        </summary>
         <div className="sample-tabs">
           {SAMPLE_WEATHER.map((s) => (
             <button
@@ -171,7 +265,7 @@ export function HackathonStudio({
               presentation only
             </span>
           </div>
-          <div className="risk-label">Illustrative weather index · 24h sample</div>
+          <div className="risk-label">Illustrative 24h weather index</div>
           <h3>
             {sample.band === "lower"
               ? "Lower weather stress"
@@ -206,52 +300,8 @@ export function HackathonStudio({
             </div>
           </div>
           <p style={{ marginTop: 12 }}>{sample.story}</p>
-          <p className="plan-note">
-            Horizons reminder: live product scores 24h only; 7d is an unscored
-            daily strip; 30d stays unavailable. Do not improvise a monthly
-            outage %.
-          </p>
         </article>
-      </section>
-
-      <section className="panel">
-        <div className="plan-heading">
-          <h3>
-            <Users size={16} aria-hidden /> Fictional household presets
-          </h3>
-          <span>Applies to prepare form only</span>
-        </div>
-        <div className="preset-grid">
-          {HOUSEHOLD_PRESETS.map((preset) => (
-            <div key={preset.id} className="preset-card">
-              <h4>{preset.label}</h4>
-              <ul className="plain-list">
-                <li>Backup power: {preset.household.backup_power}</li>
-                <li>Equipment: {preset.household.equipment}</li>
-                <li>Transportation: {preset.household.transportation}</li>
-              </ul>
-              <p className="plan-note">{preset.note}</p>
-              <button
-                type="button"
-                className="primary primary-accent"
-                onClick={() => {
-                  onApplyHousehold(preset.household);
-                  setAppliedPreset(preset.id);
-                  onGoPrepare();
-                }}
-              >
-                Apply answers & open prepare
-              </button>
-              {appliedPreset === preset.id ? (
-                <p className="preset-applied">
-                  <CheckCircle2 size={14} aria-hidden /> Applied to session
-                  answers (live area assessment untouched)
-                </p>
-              ) : null}
-            </div>
-          ))}
-        </div>
-      </section>
+      </details>
 
       <div className="grid-2">
         <section className="panel">
@@ -274,11 +324,6 @@ export function HackathonStudio({
             </h3>
             <span>Gulf grid</span>
           </div>
-          <p className="plan-note" style={{ marginTop: 0 }}>
-            Earlier ink/orange/cream drifted toward a generic lifestyle look.
-            Current tokens are cooler utility colors: bay night, volt signal,
-            concrete yard, sea mist.
-          </p>
           <div className="swatches">
             {COLOR_SYSTEM.map((c) => (
               <div key={c.token}>
@@ -289,9 +334,8 @@ export function HackathonStudio({
             ))}
           </div>
           <p className="plan-note" style={{ marginTop: 12 }}>
-            Required AI slide title: “AI we used and how we checked it.” Status:
-            deterministic weather index; optional AI wording not verified live
-            without a key — see docs/ai-validation.md.
+            Required AI slide: “AI we used and how we checked it.” See
+            docs/ai-validation.md — no-key mode is fallback only.
           </p>
         </section>
       </div>

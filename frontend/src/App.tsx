@@ -41,14 +41,24 @@ export function App() {
     return () => clearInterval(id);
   }, []);
 
-  async function assess() {
+  async function assess(countyOverride?: string) {
+    // Guard: never treat a click event as a FIPS override (onClick={assess} anti-pattern).
+    const override =
+      typeof countyOverride === "string" && /^\d{5}$/.test(countyOverride)
+        ? countyOverride
+        : null;
+    const fips = override ?? county;
+    if (override && override !== county) {
+      setCounty(override);
+      setPlan(null);
+    }
     setBusy(true);
     setError("");
     setPlan(null);
     setRisk(null);
     const token = ++generation.current;
     try {
-      const r = await request("/api/risk?county_fips=" + county, RiskSchema);
+      const r = await request("/api/risk?county_fips=" + fips, RiskSchema);
       if (token === generation.current) {
         setRisk(r);
         setView("area");
@@ -60,6 +70,10 @@ export function App() {
     } finally {
       if (token === generation.current) setBusy(false);
     }
+  }
+
+  function runAssess() {
+    void assess();
   }
 
   const status = risk ? freshness(risk, now) : null;
@@ -137,7 +151,7 @@ export function App() {
           now={now}
           busy={busy}
           error={error}
-          onAssess={assess}
+          onAssess={runAssess}
           onGoPrepare={() => setView("prepare")}
         />
       ) : null}
@@ -155,7 +169,7 @@ export function App() {
           onToggleComplete={toggle}
           supported={supported}
           status={status}
-          onAssess={assess}
+          onAssess={runAssess}
           onGoArea={() => setView("area")}
         />
       ) : null}
@@ -168,7 +182,9 @@ export function App() {
       {view === "studio" ? (
         <HackathonStudio
           onApplyHousehold={setHousehold}
-          onApplyCounty={changeCounty}
+          onAssessCounty={(fips) => {
+            void assess(fips);
+          }}
           onGoPrepare={() => setView("prepare")}
           onGoArea={() => setView("area")}
           onGoSupport={() => setView("support")}

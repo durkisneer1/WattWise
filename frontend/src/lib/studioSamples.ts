@@ -16,7 +16,7 @@ export type SampleWeather = {
 export const SAMPLE_WEATHER: SampleWeather[] = [
   {
     id: "calm",
-    label: "Sample · calmer window",
+    label: "Calmer",
     countyLabel: "Harris County · SAMPLE",
     band: "lower",
     indexValue: 0,
@@ -28,7 +28,7 @@ export const SAMPLE_WEATHER: SampleWeather[] = [
   },
   {
     id: "elevated",
-    label: "Sample · elevated stress",
+    label: "Elevated",
     countyLabel: "Fort Bend County · SAMPLE",
     band: "elevated",
     indexValue: 5,
@@ -36,11 +36,11 @@ export const SAMPLE_WEATHER: SampleWeather[] = [
     precipitationMm: 48,
     maxTemperatureC: 25,
     story:
-      "Illustrative elevated stress matching the synthetic fixture shape (gust + rain points). Presentation only — not a live Fort Bend fetch.",
+      "Illustrative elevated stress matching the synthetic fixture shape. Presentation only — not a live fetch.",
   },
   {
     id: "high",
-    label: "Sample · high stress",
+    label: "High",
     countyLabel: "Montgomery County · SAMPLE",
     band: "high",
     indexValue: 8,
@@ -62,111 +62,144 @@ export type HouseholdPreset = {
 export const HOUSEHOLD_PRESETS: HouseholdPreset[] = [
   {
     id: "household-a",
-    label: "Fictional household A",
+    label: "Household A · more prepared",
     household: {
       backup_power: "yes",
       equipment: "unknown",
       transportation: "yes",
     },
-    note: "Backup and transportation available. Area index must stay unchanged when you switch profiles. Checklist shows every eligible item (not a top-3-only list).",
+    note: "Backup + transportation. Checklist stays shorter; area index must not change.",
   },
   {
     id: "household-b",
-    label: "Fictional household B",
+    label: "Household B · more exposed",
     household: {
       backup_power: "no",
       equipment: "yes",
       transportation: "no",
     },
-    note: "No backup, equipment dependence, no reliable transportation. Priorities and checklist length change; the area assessment must not.",
+    note: "No backup, equipment dependence, no transport. Priorities expand; area index stays fixed.",
   },
 ];
 
-/** Demo counties to jump into live Area / Local support during rehearsal. */
 export const DEMO_COUNTIES = [
   {
     fips: "48201",
-    label: "Harris · Houston ref",
-    tip: "Default live check + ReadyHarris / resilience hubs",
+    label: "Harris",
+    tip: "Houston reference",
   },
   {
     fips: "48157",
-    label: "Fort Bend · Sugar Land",
-    tip: "Second county live fetch; OEM alerts directory",
+    label: "Fort Bend",
+    tip: "Sugar Land reference",
   },
   {
     fips: "48339",
-    label: "Montgomery · Conroe",
-    tip: "Third county live fetch; MoCo OEM",
+    label: "Montgomery",
+    tip: "Conroe reference",
   },
   {
     fips: "48039",
-    label: "Brazoria · Manvel",
-    tip: "Manvel reference point; Brazoria OEM",
+    label: "Brazoria",
+    tip: "Manvel reference",
   },
 ] as const;
 
 export const DEMO_BEATS = [
   {
-    time: "0:00–0:30",
-    show: "Name the resident problem: transparent area weather + household preparation. Outages hit households differently.",
+    time: "0:00",
+    show: "Problem: transparent area weather + household prep that changes with answers.",
   },
   {
-    time: "0:30–1:20",
-    show: "Live Area: check Harris, then flip Fort Bend or Montgomery. Show disclosed reference point on the map, 24h index, then 7-day unscored strip (not a weekly outage score). 30-day stays unavailable.",
+    time: "0:30",
+    show: "Area: live county check → 24h scored index → 7-day unscored strip. Index ≠ outage %.",
   },
   {
-    time: "1:20–2:10",
-    show: "Prepare: apply household A, then B. Full checklist count matches visible rows. Mark one done; progress ring updates. Area index stays fixed.",
+    time: "1:20",
+    show: "Prepare: Household A then B. Full checklist count matches rows. Area stays fixed.",
   },
   {
-    time: "2:10–2:40",
-    show: "Local support: same county focus, optional city/ZIP or device location. Open OEM + CenterPoint + nearby search — disclose unverified facility status.",
+    time: "2:10",
+    show: "Local support: same county focus + optional place. OEM / CenterPoint / nearby search — status unverified.",
   },
   {
-    time: "2:40–3:20",
-    show: "Sources and method + required AI slide from docs/ai-validation.md. No-key mode is fallback, not a verified live AI run.",
+    time: "2:40",
+    show: "Method + AI slide from docs/ai-validation.md. No-key = fallback, not a live AI win.",
   },
   {
-    time: "3:20–4:00",
-    show: "Next steps: validate AI usefulness, secure outage/forecast data, evaluate with residents/partners. No partnership claimed.",
+    time: "3:20",
+    show: "Next steps only — no partnership claims.",
+  },
+] as const;
+
+export const PRODUCT_TOUR = [
+  {
+    id: "area",
+    step: "01",
+    title: "Area weather",
+    body: "Live Open-Meteo index for Harris, Fort Bend, Montgomery, or Brazoria. Toggle 24 hours (scored) vs 7 days (unscored strip).",
+    cta: "Open Area outlook",
+    target: "area" as const,
+  },
+  {
+    id: "prepare",
+    step: "02",
+    title: "Household preparation",
+    body: "Answers reorder a full checklist — never the area score. Progress counts every visible item.",
+    cta: "Open preparation",
+    target: "prepare" as const,
+  },
+  {
+    id: "support",
+    step: "03",
+    title: "Local support near you",
+    body: "County agencies, outage tools, and map searches centered on your focus point. We do not invent open shelters.",
+    cta: "Open Local support",
+    target: "support" as const,
+  },
+  {
+    id: "method",
+    step: "04",
+    title: "Sources & method",
+    body: "Provenance, index rules, and honest AI status for the judges slide.",
+    cta: "Open Sources & method",
+    target: "method" as const,
   },
 ] as const;
 
 export const TWO_PERSON_CHECKS = [
   "Alan: resident UI, preparation, presenter assets, UI/API integration",
   "Teammate: weather/outage data, index validation, Rust risk API",
-  "Rehearse Harris + one other county (Fort Bend / Montgomery / Brazoria) before presenting",
-  "Confirm 24h scored vs 7d unscored vs 30d unavailable wording",
-  "Confirm Local support focus follows selected county; never invent open shelters",
-  "Keep screenshot fallback (docs/screenshots/wattwise-desktop.jpg) if venue network fails — label it as recorded",
-  "Never claim live AI, calibrated probability, or verified facility status without evidence",
+  "Rehearse Harris + one other county before presenting",
+  "Show 24h scored vs 7d unscored wording clearly",
+  "Local support: never invent open/capacity status",
+  "Screenshot fallback labeled as recorded if venue network fails",
+  "No live-AI or probability claims without docs evidence",
 ] as const;
 
-/** Documented color rationale for the studio swatch panel. */
 export const COLOR_SYSTEM = [
   {
     name: "Bay ink",
     token: "--ink",
     hex: "#122A33",
-    why: "Cool gulf / control-room slate for authority and map chrome — not purple AI chrome.",
+    why: "Cool gulf / control-room slate for authority and map chrome.",
   },
   {
     name: "Volt",
     token: "--orange",
     hex: "#E5892E",
-    why: "Electrical signal / action amber. Warm enough to urge prep, cooler than lifestyle terracotta.",
+    why: "Electrical signal for CTAs — urgency without lifestyle terracotta.",
   },
   {
     name: "Concrete",
     token: "--canvas",
     hex: "#E9EEF0",
-    why: "Cool utility yard surface. Avoids the warm-cream (#F4F1EA) default that reads as generic lifestyle UI.",
+    why: "Cool utility surface instead of warm-cream defaults.",
   },
   {
     name: "Sea mist",
     token: "--sage",
     hex: "#D5E3DF",
-    why: "Secondary calm panels for household and support — coastal, not avocado-cream.",
+    why: "Coastal secondary panels for household and support.",
   },
 ] as const;

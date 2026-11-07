@@ -92,39 +92,40 @@ export function AreaOutlook({
             <label className="sr-only" htmlFor="county">
               County
             </label>
-            <div className="location-row tight">
-              <MapPin size={18} aria-hidden />
-              <select
-                id="county"
-                value={county}
-                onChange={(e) => onCountyChange(e.target.value)}
-              >
-                {COUNTIES.map((c) => (
-                  <option key={c.fips} value={c.fips}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
+            <div className="assess-controls">
+              <div className="location-row tight">
+                <MapPin size={16} aria-hidden />
+                <select
+                  id="county"
+                  value={county}
+                  onChange={(e) => onCountyChange(e.target.value)}
+                >
+                  {COUNTIES.map((c) => (
+                    <option key={c.fips} value={c.fips}>
+                      {c.name.replace(", Texas", "")}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <button
                 type="button"
-                className="primary primary-accent"
+                className="primary primary-accent assess-go"
                 onClick={onAssess}
                 disabled={busy}
               >
                 {busy ? (
                   <>
-                    <RefreshCw size={16} className="spin" /> Checking
+                    <RefreshCw size={15} className="spin" /> Checking…
                   </>
                 ) : (
                   <>
-                    Check area <ArrowRight size={16} />
+                    Check area <ArrowRight size={15} />
                   </>
                 )}
               </button>
             </div>
             <p className="location-note">
-              County guidance only · disclosed reference point on the map · not
-              the power grid
+              County guidance · disclosed map reference · not the power grid
             </p>
 
             <div
@@ -143,7 +144,7 @@ export function AreaOutlook({
                   }
                   onClick={() => setHorizon(h.id)}
                 >
-                  {h.label}
+                  {h.id === "24h" ? "24 hours" : "7 days"}
                 </button>
               ))}
             </div>
@@ -159,9 +160,9 @@ export function AreaOutlook({
           </div>
 
           {!risk ? (
-            <div className="hero-card panel">
+            <div className="hero-card panel hero-card-empty">
               <span className="empty-icon">
-                <Radio size={22} />
+                <Radio size={18} />
               </span>
               <div>
                 <h2>
@@ -171,8 +172,8 @@ export function AreaOutlook({
                 </h2>
                 <p>
                   {busy
-                    ? `Pulling the Open-Meteo window for the ${selected?.placeHint ?? "selected"} point.`
-                    : "Pick Harris, Fort Bend, Montgomery, or Brazoria (Manvel), then load a live weather-stress index."}
+                    ? `Pulling Open-Meteo for the ${selected?.placeHint ?? "selected"} point.`
+                    : "Choose a county, then Check area for a live weather-stress index."}
                 </p>
               </div>
             </div>
@@ -200,21 +201,17 @@ export function AreaOutlook({
                 {horizon === "24h" && current
                   ? "Experimental weather index"
                   : horizon === "7d"
-                    ? "Weekly outlook"
-                    : horizon === "30d"
-                      ? "Monthly horizon"
-                      : "Assessment status"}
+                    ? "7-day outlook"
+                    : "Assessment status"}
               </div>
               <h2>
-                {horizon === "30d"
-                  ? "30-day outage outlook is not available."
-                  : horizon === "7d"
-                    ? current
-                      ? "Daily weather strip — not a weekly score."
-                      : risk.display_label
-                    : status === "stale"
-                      ? "This forecast needs a refresh."
-                      : risk.display_label}
+                {horizon === "7d"
+                  ? current
+                    ? "Daily weather strip — not a weekly score."
+                    : risk.display_label
+                  : status === "stale"
+                    ? "This forecast needs a refresh."
+                    : risk.display_label}
               </h2>
               {horizon === "24h" && current ? (
                 <>
@@ -247,11 +244,6 @@ export function AreaOutlook({
                 <p className="risk-blurb">
                   Seven daily Open-Meteo summaries at the disclosed reference
                   point. No weekly stress score is computed.
-                </p>
-              ) : horizon === "30d" ? (
-                <p className="risk-blurb">
-                  weather-index-v1 only scores the next 24 hours. A monthly
-                  outage probability is not invented here.
                 </p>
               ) : (
                 <p className="risk-blurb">
@@ -421,20 +413,6 @@ export function AreaOutlook({
                   </p>
                 </div>
               )}
-            </div>
-          ) : null}
-
-          {horizon === "30d" ? (
-            <div className="panel panel-muted monthly-gap">
-              <Info size={18} />
-              <div>
-                <h3>30 days unavailable</h3>
-                <p>
-                  This release does not score or forecast a 30-day outage
-                  outlook. Use the 24-hour index and the 7-day weather strip
-                  instead — without treating either as an outage probability.
-                </p>
-              </div>
             </div>
           ) : null}
         </section>
