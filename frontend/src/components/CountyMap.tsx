@@ -11,6 +11,8 @@ type Props = {
   refLabel: string;
   /** `stage` fills the map-first Area outlook. */
   variant?: "card" | "stage";
+  /** Default false on stage maps so floating callouts don’t collide with docks. */
+  openPopup?: boolean;
 };
 
 /** Real OpenStreetMap centered on the disclosed county reference weather point. */
@@ -21,6 +23,7 @@ export function CountyMap({
   lon,
   refLabel,
   variant = "card",
+  openPopup = variant !== "stage",
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -51,12 +54,12 @@ export function CountyMap({
       iconAnchor: [11, 11],
     });
 
-    L.marker([lat, lon], { icon })
+    const marker = L.marker([lat, lon], { icon })
       .addTo(map)
       .bindPopup(
         `<strong>${refLabel}</strong><br/>${lat.toFixed(2)}° N · ${Math.abs(lon).toFixed(2)}° W<br/><span style="font-size:12px;color:#5f7270">Open-Meteo forecast point for county guidance — not county-wide weather.</span>`,
-      )
-      .openPopup();
+      );
+    if (openPopup) marker.openPopup();
 
     L.circle([lat, lon], {
       radius: 12000,
@@ -73,7 +76,7 @@ export function CountyMap({
       map.remove();
       mapRef.current = null;
     };
-  }, [supported, lat, lon, refLabel]);
+  }, [supported, lat, lon, refLabel, openPopup]);
 
   useEffect(() => {
     if (!supported || !mapRef.current) return;

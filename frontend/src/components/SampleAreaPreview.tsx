@@ -33,6 +33,8 @@ function formatDayLabel(date: string) {
   }).format(parsed);
 }
 
+const SAMPLE_FALLBACK = "2026-11-07T18:00:00.000Z";
+
 /** Full Area-outlook chrome fed only by labeled Studio samples — never live API. */
 export function SampleAreaPreview({ sample, onGoPrepare }: Props) {
   const [horizon, setHorizon] = useState<HorizonId>("24h");
@@ -46,7 +48,10 @@ export function SampleAreaPreview({ sample, onGoPrepare }: Props) {
   const points = indexCue(sample.indexValue, 9);
 
   return (
-    <div className="area-stage sample-area-stage" aria-label="Sample Area outlook">
+    <div
+      className="area-stage sample-area-stage"
+      aria-label="Sample Area outlook"
+    >
       <div className="sample-area-banner" role="status">
         <AlertTriangle size={16} aria-hidden />
         <div>
@@ -99,6 +104,7 @@ export function SampleAreaPreview({ sample, onGoPrepare }: Props) {
           </div>
 
           <article
+            key={sample.id}
             className={"hero-card risk-card float-card " + sample.band}
           >
             <div className="risk-top">
@@ -134,7 +140,6 @@ export function SampleAreaPreview({ sample, onGoPrepare }: Props) {
             {points ? <p className="motivator-line">{points}</p> : null}
             {drivers ? (
               <ul
-                key={sample.id}
                 className="driver-chips driver-chips-play"
                 aria-label="What drives this sample index"
               >
@@ -287,5 +292,3 @@ export function SampleAreaPreview({ sample, onGoPrepare }: Props) {
     </div>
   );
 }
-
-const SAMPLE_FALLBACK = "2026-11-07T18:00:00.000Z";

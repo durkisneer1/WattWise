@@ -410,14 +410,13 @@ svg {
 .map-stage-overlay {
   position: relative;
   z-index: 510;
-  display: grid;
-  grid-template-columns: minmax(240px, 300px) minmax(240px, 320px);
-  gap: 12px;
-  align-items: start;
+  display: flex;
   justify-content: space-between;
+  align-items: stretch;
+  gap: 16px;
   padding: 14px;
   pointer-events: none;
-  min-height: 560px;
+  min-height: 620px;
 }
 
 .map-stage-overlay > * {
@@ -432,9 +431,12 @@ svg {
 }
 
 .assess-dock {
-  align-self: start;
+  align-self: flex-start;
+  flex: 0 1 300px;
+  max-width: 300px;
   background: #fffffff2;
   padding: 14px !important;
+  z-index: 2;
 }
 
 .assess-dock.panel {
@@ -893,15 +895,18 @@ svg {
 }
 
 .hero-card {
-  align-self: end;
-  justify-self: end;
+  align-self: flex-end;
+  flex: 0 1 340px;
+  max-width: 340px;
+  max-height: calc(100% - 12px);
+  overflow-y: auto;
   background: #fffffff5;
   display: flex;
   gap: 10px;
   align-items: flex-start;
   padding: 14px !important;
   border-radius: 14px;
-  max-width: 300px;
+  z-index: 1;
 }
 
 .hero-card h2 {
@@ -929,7 +934,7 @@ svg {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-width: 320px;
+  max-width: 340px;
 }
 
 .float-card.risk-card h2 {
@@ -2112,14 +2117,21 @@ td {
   }
 
   .map-stage-overlay {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
     min-height: auto;
   }
 
+  .assess-dock,
   .hero-card {
-    justify-self: stretch;
-    align-self: stretch;
+    flex: 1 1 auto;
     max-width: none;
+    width: 100%;
+    align-self: stretch;
+  }
+
+  .hero-card {
+    max-height: none;
   }
 
   .map-stage {
@@ -2570,7 +2582,7 @@ td {
 }
 
 .sample-area-stage .map-stage {
-  min-height: 520px;
+  min-height: 640px;
 }
 
 @media (max-width: 720px) {
