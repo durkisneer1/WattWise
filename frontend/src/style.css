@@ -426,6 +426,7 @@ svg {
   z-index: 50;
   padding: 16px;
   pointer-events: none;
+  /* Keep cards fully inside the map frame — clipping was cutting the risk card top. */
   overflow: hidden;
 }
 
@@ -915,11 +916,13 @@ svg {
 
 .hero-card {
   position: absolute;
+  top: 16px;
   right: 16px;
   bottom: 16px;
   width: min(328px, calc(100% - 32px));
-  /* Fit under the dock; scroll inside the card — never spill into metrics. */
-  max-height: calc(100% - 176px);
+  /* Inset from every map edge so the top/bottom never get clipped by the cutout. */
+  max-height: none;
+  height: auto;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -930,6 +933,13 @@ svg {
   padding: 14px !important;
   border-radius: 14px;
   z-index: 20;
+}
+
+.hero-card-empty {
+  top: auto;
+  bottom: 16px;
+  height: auto;
+  max-height: calc(100% - 32px);
 }
 
 .hero-card h2 {
