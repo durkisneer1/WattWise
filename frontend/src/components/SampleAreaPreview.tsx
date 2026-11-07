@@ -137,7 +137,12 @@ export function SampleAreaPreview({ sample, onGoPrepare }: Props) {
                 ))}
               </div>
             </div>
-            {points ? <p className="motivator-line">{points}</p> : null}
+            {points ? (
+              <p className="motivator-line">
+                {points}
+                <small> (not an outage probability).</small>
+              </p>
+            ) : null}
             {drivers ? (
               <ul
                 className="driver-chips driver-chips-play"

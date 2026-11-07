@@ -15,8 +15,6 @@ import { downloadChecklist, printChecklist } from "../lib/checklistExport";
 type Props = {
   household: Household;
   onHouseholdChange: (next: Household) => void;
-  useAI: boolean;
-  onUseAIChange: (value: boolean) => void;
   plan: Plan | null;
   risk: Risk | null;
   planning: boolean;
@@ -61,8 +59,6 @@ function answerLabel(a: Answer) {
 export function PreparationPlan({
   household,
   onHouseholdChange,
-  useAI,
-  onUseAIChange,
   plan,
   risk,
   planning,
@@ -165,21 +161,6 @@ export function PreparationPlan({
               </div>
             </fieldset>
           ))}
-
-          <label className="ai-toggle">
-            <input
-              type="checkbox"
-              checked={useAI}
-              onChange={(e) => onUseAIChange(e.target.checked)}
-            />
-            <span>
-              Prefer AI-selected wording when available
-              <small>
-                Only general actions and weather go to the provider. Household
-                answers stay on this server.
-              </small>
-            </span>
-          </label>
 
           <div className="privacy">
             <ShieldCheck size={15} aria-hidden />
@@ -380,9 +361,7 @@ export function PreparationPlan({
                 </button>
               </div>
               <p className="plan-note">
-                {useAI && plan.explanation_mode === "approved_text_fallback"
-                  ? "AI wording was not available or did not pass validation. Approved guidance is shown."
-                  : "Prepared from reviewed public preparedness guidance."}
+                Prepared from reviewed public preparedness guidance.
               </p>
             </>
           ) : null}

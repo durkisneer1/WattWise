@@ -21,7 +21,7 @@ export function freshnessCue(risk: Risk, status: string | null, now = Date.now()
 
 export function indexCue(indexValue: number | null, scale: number | null) {
   if (indexValue == null || scale == null) return null;
-  return `${indexValue} of ${scale} weather stress points (not an outage probability).`;
+  return `${indexValue} of ${scale} weather stress points`;
 }
 
 export type IndexDriver = {

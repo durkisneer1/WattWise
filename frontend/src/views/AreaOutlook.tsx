@@ -240,7 +240,12 @@ export function AreaOutlook({
                       ))}
                     </div>
                   </div>
-                  {points ? <p className="motivator-line">{points}</p> : null}
+                  {points ? (
+                    <p className="motivator-line">
+                      {points}
+                      <small> (not an outage probability).</small>
+                    </p>
+                  ) : null}
                   {drivers ? (
                     <ul
                       key={risk.risk_id}

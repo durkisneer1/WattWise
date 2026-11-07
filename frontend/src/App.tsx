@@ -32,7 +32,6 @@ export function App() {
   const [planning, setPlanning] = useState(false);
   const [error, setError] = useState("");
   const [planError, setPlanError] = useState("");
-  const [useAI, setUseAI] = useState(false);
   const [now, setNow] = useState(Date.now());
   const generation = useRef(0);
 
@@ -91,7 +90,12 @@ export function App() {
       request(
         "/api/plan",
         PlanSchema,
-        { risk_id: risk.risk_id, household, completed, use_ai: useAI },
+        {
+          risk_id: risk.risk_id,
+          household,
+          completed,
+          use_ai: false,
+        },
         abort.signal,
       )
         .then((p) => {
@@ -113,7 +117,7 @@ export function App() {
       clearTimeout(timer);
       abort.abort();
     };
-  }, [risk, household, completed, useAI, status]);
+  }, [risk, household, completed, status]);
 
   const toggle = (id: string) =>
     setCompleted((v) =>
@@ -159,8 +163,6 @@ export function App() {
         <PreparationPlan
           household={household}
           onHouseholdChange={setHousehold}
-          useAI={useAI}
-          onUseAIChange={setUseAI}
           plan={plan}
           risk={risk}
           planning={planning}

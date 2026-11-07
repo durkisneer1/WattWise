@@ -54,7 +54,7 @@ describe("Rust to frontend contracts (synthetic test fixtures only)", () => {
   });
   it("frames motivators without inventing probability", () => {
     const r = RiskSchema.parse(riskFixture);
-    expect(indexCue(5, 9)).toContain("not an outage probability");
+    expect(indexCue(5, 9)).toBe("5 of 9 weather stress points");
     expect(indexCue(null, 9)).toBeNull();
     expect(minutesUntilExpiry(r, Date.parse(r.expires_at) - 120000)).toBe(2);
     expect(freshnessCue(r, "stale")).toMatch(/expired/i);
