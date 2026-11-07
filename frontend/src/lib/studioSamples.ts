@@ -1,54 +1,156 @@
 import type { Household } from "../api";
+import { COUNTIES } from "./coverage";
 
 /** Presentation-only weather samples. Never sent to /api/risk or used as live fallback. */
+export type SampleDaily = {
+  date: string;
+  max_gust_kmh: number;
+  precipitation_mm: number;
+  min_temperature_c: number;
+  max_temperature_c: number;
+};
+
+export type SampleHourly = {
+  time: string;
+  gust_kmh: number;
+  precipitation_mm: number;
+  temperature_c: number;
+};
+
 export type SampleWeather = {
   id: string;
   label: string;
+  countyFips: string;
   countyLabel: string;
+  refLabel: string;
+  lat: number;
+  lon: number;
   band: "lower" | "elevated" | "high";
+  displayLabel: string;
   indexValue: number;
   maxGustKmh: number;
   precipitationMm: number;
+  minTemperatureC: number;
   maxTemperatureC: number;
   story: string;
+  hourly: SampleHourly[];
+  daily: SampleDaily[];
 };
+
+function countyByFips(fips: string) {
+  const c = COUNTIES.find((x) => x.fips === fips);
+  if (!c) throw new Error(`Unknown sample county ${fips}`);
+  return c;
+}
+
+function buildHourly(
+  baseIso: string,
+  peakGust: number,
+  totalRain: number,
+  minT: number,
+  maxT: number,
+): SampleHourly[] {
+  const start = Date.parse(baseIso);
+  return Array.from({ length: 24 }, (_, i) => {
+    const t = new Date(start + i * 3600_000).toISOString();
+    const wave = Math.sin((i / 24) * Math.PI);
+    return {
+      time: t,
+      gust_kmh: Number((peakGust * (0.45 + 0.55 * wave)).toFixed(1)),
+      precipitation_mm: Number(((totalRain / 24) * (0.4 + wave)).toFixed(2)),
+      temperature_c: Number((minT + (maxT - minT) * wave).toFixed(1)),
+    };
+  });
+}
+
+function buildDaily(
+  startDate: string,
+  peakGust: number,
+  rain: number,
+  minT: number,
+  maxT: number,
+): SampleDaily[] {
+  const start = Date.parse(`${startDate}T12:00:00Z`);
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(start + i * 86400_000);
+    const date = d.toISOString().slice(0, 10);
+    const fade = 1 - i * 0.08;
+    return {
+      date,
+      max_gust_kmh: Number((peakGust * fade).toFixed(1)),
+      precipitation_mm: Number((rain * (0.55 + (i % 3) * 0.15)).toFixed(1)),
+      min_temperature_c: Number((minT + (i % 2)).toFixed(1)),
+      max_temperature_c: Number((maxT - (i % 2) * 0.5).toFixed(1)),
+    };
+  });
+}
+
+const harris = countyByFips("48201");
+const fortBend = countyByFips("48157");
+const montgomery = countyByFips("48339");
+const SAMPLE_BASE = "2026-11-07T18:00:00.000Z";
+const SAMPLE_DAY = "2026-11-07";
 
 export const SAMPLE_WEATHER: SampleWeather[] = [
   {
     id: "calm",
     label: "Calmer",
-    countyLabel: "Harris County · SAMPLE",
+    countyFips: harris.fips,
+    countyLabel: `${harris.name} · SAMPLE`,
+    refLabel: harris.refLabel,
+    lat: harris.lat,
+    lon: harris.lon,
     band: "lower",
+    displayLabel: "Lower weather stress",
     indexValue: 0,
     maxGustKmh: 28,
     precipitationMm: 1.2,
+    minTemperatureC: 18,
     maxTemperatureC: 24,
     story:
       "Illustrative lower stress: light gusts and little rain. Still not an outage probability.",
+    hourly: buildHourly(SAMPLE_BASE, 28, 1.2, 18, 24),
+    daily: buildDaily(SAMPLE_DAY, 28, 1.2, 18, 24),
   },
   {
     id: "elevated",
     label: "Elevated",
-    countyLabel: "Fort Bend County · SAMPLE",
+    countyFips: fortBend.fips,
+    countyLabel: `${fortBend.name} · SAMPLE`,
+    refLabel: fortBend.refLabel,
+    lat: fortBend.lat,
+    lon: fortBend.lon,
     band: "elevated",
+    displayLabel: "Elevated weather stress",
     indexValue: 5,
     maxGustKmh: 65,
     precipitationMm: 48,
+    minTemperatureC: 19,
     maxTemperatureC: 25,
     story:
       "Illustrative elevated stress matching the synthetic fixture shape. Presentation only — not a live fetch.",
+    hourly: buildHourly(SAMPLE_BASE, 65, 48, 19, 25),
+    daily: buildDaily(SAMPLE_DAY, 65, 48, 19, 25),
   },
   {
     id: "high",
     label: "High",
-    countyLabel: "Montgomery County · SAMPLE",
+    countyFips: montgomery.fips,
+    countyLabel: `${montgomery.name} · SAMPLE`,
+    refLabel: montgomery.refLabel,
+    lat: montgomery.lat,
+    lon: montgomery.lon,
     band: "high",
+    displayLabel: "High weather stress",
     indexValue: 8,
     maxGustKmh: 88,
     precipitationMm: 90,
+    minTemperatureC: 27,
     maxTemperatureC: 39,
     story:
       "Illustrative high stress: strong gusts, heavy rain, and heat extreme. Not a live forecast.",
+    hourly: buildHourly(SAMPLE_BASE, 88, 90, 27, 39),
+    daily: buildDaily(SAMPLE_DAY, 88, 90, 27, 39),
   },
 ];
 
@@ -165,16 +267,6 @@ export const PRODUCT_TOUR = [
     cta: "Open Sources & method",
     target: "method" as const,
   },
-] as const;
-
-export const TWO_PERSON_CHECKS = [
-  "Alan: resident UI, preparation, presenter assets, UI/API integration",
-  "Teammate: weather/outage data, index validation, Rust risk API",
-  "Rehearse Harris + one other county before presenting",
-  "Show 24h scored vs 7d unscored wording clearly",
-  "Local support: never invent open/capacity status",
-  "Screenshot fallback labeled as recorded if venue network fails",
-  "No live-AI or probability claims without docs evidence",
 ] as const;
 
 export const COLOR_SYSTEM = [
