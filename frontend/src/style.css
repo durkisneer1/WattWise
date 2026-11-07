@@ -385,16 +385,20 @@ svg {
 .map-stage {
   position: relative;
   min-height: 560px;
-  border-radius: 22px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow);
-  background: #cfd8d2;
+  /* Cards float above the map window — do not clip them with the stage border. */
+  overflow: visible;
+  background: transparent;
 }
 
 .map-stage-canvas {
   position: absolute;
   inset: 0;
+  z-index: 1;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  background: #cfd8d2;
 }
 
 .map-stage-canvas .county-map,
@@ -411,9 +415,11 @@ svg {
 .map-stage-overlay {
   position: absolute;
   inset: 0;
-  z-index: 450;
+  /* Above the map cutout; below the sticky Studio title bar. */
+  z-index: 50;
   padding: 14px;
   pointer-events: none;
+  overflow: visible;
   min-height: 620px;
 }
 
@@ -435,7 +441,7 @@ svg {
   width: min(300px, calc(100% - 28px));
   background: #fffffff7;
   padding: 14px !important;
-  /* Above the floating risk card and map chrome. */
+  /* Above the floating risk card. */
   z-index: 40;
 }
 
@@ -2231,6 +2237,9 @@ td {
 
   .map-stage {
     min-height: 640px;
+  }
+
+  .map-stage-canvas {
     border-radius: 16px;
   }
 
