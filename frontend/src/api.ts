@@ -43,6 +43,15 @@ export const RiskSchema = z.object({
       temperature_c: z.number(),
     }),
   ),
+  daily_outlook: z.array(
+    z.object({
+      date: z.string(),
+      max_gust_kmh: z.number(),
+      precipitation_mm: z.number(),
+      min_temperature_c: z.number(),
+      max_temperature_c: z.number(),
+    }),
+  ),
   evidence: z.array(z.string()),
   sources: z.array(Source),
   method_version: z.string(),
@@ -50,6 +59,7 @@ export const RiskSchema = z.object({
   cached: z.boolean(),
 });
 export type Risk = z.infer<typeof RiskSchema>;
+export type DailyOutlook = Risk["daily_outlook"][number];
 export const ActionSchema = z.object({
   action_id: z.string(),
   priority: z.number(),
@@ -107,3 +117,14 @@ export function freshness(r: Risk, now = Date.now()) {
     ? "stale"
     : r.status;
 }
+
+/** GET /api/method — documented weather-index rules from the Rust service. */
+export const MethodSchema = z.object({
+  version: z.string(),
+  scale: z.number(),
+  wind: z.string(),
+  rain: z.string(),
+  temperature: z.string(),
+  bands: z.string(),
+});
+export type Method = z.infer<typeof MethodSchema>;

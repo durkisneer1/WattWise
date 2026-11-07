@@ -1,0 +1,17 @@
+---
+description: WattWise React frontend conventions and live-state rules
+globs: frontend/**/*.{ts,tsx,css}
+alwaysApply: false
+---
+
+# WattWise frontend
+
+- Stack: React + TypeScript + Vite + Tailwind + lucide-react. Keep `frontend/src/api.ts` Zod schemas as the response authority.
+- Preserve live state across navigation: household answers, checklist completion, and the current assessment must not reset when switching views.
+- Household edits refresh the plan only; area weather refreshes only on explicit assess/refresh.
+- Keep abort handling and `risk_id` mismatch protection when answers change.
+- All statuses must stay legible: initial, loading, current, cached, unavailable, stale, unsupported, request failure, plan refresh, plan failure, completion.
+- Missing weather must never look like a zero index or a safe condition. Hide old weather values after expiry; require refresh before a new plan from a stale assessment.
+- Display times in America/Chicago. Use server-provided action text, priorities, and source references — do not recreate eligibility logic in the frontend.
+- Visual system (Gulf grid): bay ink `#122A33`, volt `#E5892E`, concrete canvas `#E9EEF0`, sea mist `#D5E3DF`. Cool utility colors — not purple chrome or warm-cream/terracotta lifestyle defaults. Dark desktop sidebar, light workspace; usable mobile nav with visible focus.
+- Checklist save/print builds from the current server plan and completion state with source links and assessment context. Completion is progress, not a safety score.

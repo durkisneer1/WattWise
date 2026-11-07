@@ -1,0 +1,17 @@
+---
+description: WattWise project invariants from handoff and docs — always apply
+alwaysApply: true
+---
+
+# WattWise invariants
+
+- WattWise is the platform. Backup Planner is out of scope for this build.
+- Ownership: Alan — frontend UX, preparation display, presenter assets, UI/API integration. Teammate — weather/outage data, index validation, Rust risk API. Coordinate before shared API/module edits.
+- Work on `codex/wattwise-ui-presentation`. Do not merge into `codex/wattwise-implementation`. Never force-push the teammate’s branch or reset over unrelated local work.
+- Before editing and before finishing: `git fetch origin` and compare to `origin/codex/wattwise-implementation`. If it advanced, review commits and shared files before integrating onto our branch only.
+- Authoritative contract: `frontend/src/api.ts` and `docs/api.md`. Do not change the backend protocol to fit a prototype or earlier bundled contract.
+- No numerical outage probability. `probability` is always null. Do not claim a trained model, calibrated probability, or verified live AI call without evidence in `docs/ai-validation.md` / `docs/verification.md`.
+- Studio/sample forecasts must be clearly labeled presentation mode — never a silent live-data fallback.
+- Do not fabricate facility addresses, open/capacity status, travel availability, or restoration times.
+- Provider secrets stay server-side. Raw household answers stay off the model payload (existing backend behavior).
+- If a detail is not in the handoff, README, or `docs/*`, read the file or ask — do not invent it.

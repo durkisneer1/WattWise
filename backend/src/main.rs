@@ -28,9 +28,13 @@ struct AppState {
     ai: Option<(String, String)>,
 }
 #[derive(Default)]
-struct WeatherCache {
+struct CountyWeather {
     latest: Option<Risk>,
     last_attempt: Option<chrono::DateTime<Utc>>,
+}
+#[derive(Default)]
+struct WeatherCache {
+    by_county: HashMap<String, CountyWeather>,
 }
 type ApiError = (StatusCode, Json<Value>);
 fn error(status: StatusCode, message: &str) -> ApiError {
@@ -70,33 +74,38 @@ async fn get_risk(
         ));
     }
     let now = Utc::now();
-    if q.county_fips != "48201" {
-        return Ok(Json(Risk::unavailable(now, false)));
-    }
-    // Serialize refreshes so concurrent residents share one upstream request.
+    let Some(coverage) = risk::coverage_for(&q.county_fips) else {
+        return Ok(Json(Risk::unavailable(now, None)));
+    };
+    // Serialize refreshes so concurrent residents share one upstream request per county.
     let mut cache = state.weather.lock().await;
-    let recent = cache
+    let entry = cache.by_county.entry(q.county_fips.clone()).or_default();
+    let recent = entry
         .last_attempt
         .is_some_and(|t| now - t < Duration::seconds(60));
-    let fresh = cache
+    let fresh = entry
         .latest
         .as_ref()
         .is_some_and(|r| now - r.fetched_at.unwrap() < Duration::minutes(10));
     let mut result = if fresh || recent {
-        cache
+        entry
             .latest
             .clone()
-            .unwrap_or_else(|| Risk::unavailable(now, true))
+            .unwrap_or_else(|| Risk::unavailable(now, Some(coverage)))
     } else {
-        cache.last_attempt = Some(now);
+        entry.last_attempt = Some(now);
         let response = state
             .client
             .get("https://api.open-meteo.com/v1/forecast")
             .query(&[
-                ("latitude", "29.76"),
-                ("longitude", "-95.37"),
+                ("latitude", coverage.lat),
+                ("longitude", coverage.lon),
                 ("hourly", "temperature_2m,precipitation,wind_gusts_10m"),
-                ("forecast_days", "3"),
+                (
+                    "daily",
+                    "temperature_2m_max,temperature_2m_min,precipitation_sum,wind_gusts_10m_max",
+                ),
+                ("forecast_days", "7"),
                 ("timezone", "UTC"),
                 ("timeformat", "unixtime"),
                 ("wind_speed_unit", "kmh"),
@@ -109,17 +118,17 @@ async fn get_risk(
             Ok(r) if r.status().is_success() => r.json::<Value>().await.ok(),
             _ => None,
         };
-        match data.and_then(|v| risk::from_weather(&v, Utc::now())) {
+        match data.and_then(|v| risk::from_weather(&v, Utc::now(), coverage)) {
             Some(r) => {
-                cache.latest = Some(r.clone());
+                entry.latest = Some(r.clone());
                 r
             }
             None => {
-                tracing::warn!("Weather refresh unavailable");
-                cache
+                tracing::warn!("Weather refresh unavailable for {}", coverage.fips);
+                entry
                     .latest
                     .clone()
-                    .unwrap_or_else(|| Risk::unavailable(now, true))
+                    .unwrap_or_else(|| Risk::unavailable(now, Some(coverage)))
             }
         }
     };
@@ -174,8 +183,17 @@ async fn get_plan(
 }
 async fn health(State(state): State<AppState>) -> Json<Value> {
     let cache = state.weather.lock().await;
+    let weather = if cache.by_county.values().any(|c| {
+        c.latest
+            .as_ref()
+            .is_some_and(|r| r.expires_at > Utc::now())
+    }) {
+        "recent_fetch_available"
+    } else {
+        "not_verified"
+    };
     Json(
-        json!({"status":"ok","weather":if cache.latest.as_ref().is_some_and(|r|r.expires_at>Utc::now()){"recent_fetch_available"}else{"not_verified"},"ai":if state.ai.is_some(){"configured_not_verified"}else{"not_configured"},"model":"weather_index_only"}),
+        json!({"status":"ok","weather":weather,"ai":if state.ai.is_some(){"configured_not_verified"}else{"not_configured"},"model":"weather_index_only","counties":risk::COVERAGE.iter().map(|c|c.fips).collect::<Vec<_>>()}),
     )
 }
 async fn no_store(request: Request, next: Next) -> Response {
@@ -230,7 +248,13 @@ mod tests {
     async fn unavailable_weather_still_produces_general_plan() {
         let mut state = AppState::new();
         state.ai = None;
-        state.weather.lock().await.last_attempt = Some(Utc::now());
+        state.weather.lock().await.by_county.insert(
+            "48201".into(),
+            CountyWeather {
+                latest: None,
+                last_attempt: Some(Utc::now()),
+            },
+        );
         let router = app(state);
         let response = router
             .clone()
@@ -271,13 +295,19 @@ mod tests {
     async fn stale_weather_is_not_current() {
         let state = AppState::new();
         let old = Utc::now() - Duration::minutes(31);
-        let mut risk = Risk::unavailable(old, true);
+        let coverage = risk::coverage_for("48201").unwrap();
+        let mut risk = Risk::unavailable(old, Some(coverage));
         risk.fetched_at = Some(old);
         risk.status = Status::Current;
         {
             let mut cache = state.weather.lock().await;
-            cache.latest = Some(risk);
-            cache.last_attempt = Some(Utc::now());
+            cache.by_county.insert(
+                "48201".into(),
+                CountyWeather {
+                    latest: Some(risk),
+                    last_attempt: Some(Utc::now()),
+                },
+            );
         }
         let response = app(state)
             .oneshot(
@@ -331,7 +361,10 @@ mod tests {
     #[tokio::test]
     async fn expired_risk_rejected() {
         let s = AppState::new();
-        let r = Risk::unavailable(Utc::now() - Duration::hours(1), true);
+        let r = Risk::unavailable(
+            Utc::now() - Duration::hours(1),
+            risk::coverage_for("48201"),
+        );
         let id = r.risk_id.clone();
         s.assessments.lock().await.insert(id.clone(), r);
         let response = app(s)

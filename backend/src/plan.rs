@@ -235,7 +235,7 @@ mod tests {
     }
     #[test]
     fn different_households_same_risk() {
-        let r = Risk::unavailable(Utc::now(), true);
+        let r = Risk::unavailable(Utc::now(), crate::risk::coverage_for("48201"));
         let before = serde_json::to_string(&r).unwrap();
         let general = build(&r, &request());
         let mut req = request();
@@ -256,7 +256,7 @@ mod tests {
     fn completion_and_sources() {
         let mut req = request();
         req.completed = vec!["lighting".into()];
-        let p = build(&Risk::unavailable(Utc::now(), true), &req);
+        let p = build(&Risk::unavailable(Utc::now(), crate::risk::coverage_for("48201")), &req);
         assert!(!p.actions.iter().any(|a| a.action_id == "lighting"));
         assert!(
             p.checklist
@@ -275,7 +275,7 @@ mod tests {
     }
     #[test]
     fn invalid_ai_is_rejected() {
-        let a = build(&Risk::unavailable(Utc::now(), true), &request()).actions;
+        let a = build(&Risk::unavailable(Utc::now(), crate::risk::coverage_for("48201")), &request()).actions;
         for raw in [
             "garbage",
             r#"{"selections":[]}"#,
@@ -304,7 +304,7 @@ mod tests {
     }
     #[test]
     fn export_contract_fixture() {
-        let mut p = build(&Risk::unavailable(Utc::now(), true), &request());
+        let mut p = build(&Risk::unavailable(Utc::now(), crate::risk::coverage_for("48201")), &request());
         p.risk_id = "synthetic-contract-fixture".into();
         std::fs::create_dir_all("../tests/fixtures").unwrap();
         std::fs::write(

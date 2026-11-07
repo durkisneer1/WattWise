@@ -1,6 +1,6 @@
 # API integration contract
 
-All timestamps are ISO 8601 UTC. UI converts them to America/Chicago. `/api/risk` accepts only `county_fips` (required). Invalid syntax returns 400; unrecognized query fields are rejected. Unsupported five-digit county codes return a response with status `unsupported`, null county identity, null index and probability. The supported code is 48201.
+All timestamps are ISO 8601 UTC. UI converts them to America/Chicago. `/api/risk` accepts only `county_fips` (required). Invalid syntax returns 400; unrecognized query fields are rejected. Unsupported five-digit county codes return a response with status `unsupported`, null county identity, null index and probability. Supported codes: `48201` Harris (Houston), `48157` Fort Bend (Sugar Land), `48339` Montgomery (Conroe), `48039` Brazoria (Manvel). Each uses a disclosed reference lat/lon — not county-wide aggregation. Responses include unscored `daily_outlook` (up to 7 days) alongside the scored 24-hour index.
 
 The exact serialized fixtures produced by Rust tests are in `tests/fixtures/risk.json` and `plan.json`. They are **synthetic test data**, never live forecasts or historical replays. The frontend tests parse these same files with runtime schemas.
 

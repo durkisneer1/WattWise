@@ -1,0 +1,14 @@
+---
+description: WattWise API boundary — read docs before changing contracts
+globs: frontend/src/api.ts,backend/src/**/*.rs,docs/api.md,tests/fixtures/**
+alwaysApply: false
+---
+
+# WattWise API boundary
+
+- Read `docs/api.md` and the matching Zod schemas / Rust types before changing request or response shapes.
+- `GET /api/risk` uses `county_fips` only (Harris `48201` supported). Coverage uses the disclosed Houston reference weather point — not county-wide aggregation or grid telemetry.
+- `mode` is `weather_index` or `unavailable`. Index is 0–9 or null; scale 9 or null. Preserve assessment/fetch/expiry/window timestamps.
+- `POST /api/plan`: answers are `yes` | `no` | `unknown` | `prefer_not_to_answer`. Server owns eligibility, priorities, and action text.
+- Fixtures under `tests/fixtures` are synthetic test data, never live forecasts. Frontend tests parse the same files.
+- Shared-module edits (`api.ts`, `risk.rs`, `plan.rs`, `main.rs`, API docs) require explicit teammate coordination. Prefer UI-only changes on the presentation branch.

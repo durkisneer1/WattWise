@@ -12,7 +12,8 @@ Implementation checked November 7, 2026, America/Chicago.
 | Live HTTP integration | Passed against Open-Meteo. Status current; forecast window 2026-11-07T17:00:00Z through 2026-11-08T17:00:00Z. No-key AI status not_configured |
 | Desktop browser | Real forecast displayed; fictional household changes updated priorities; area assessment unchanged; checklist completion and evidence expansion worked |
 | Mobile browser | 390×844 viewport; no horizontal overflow; location and assessment readable |
-| Unsupported county browser | Fort Bend displayed coverage message and no estimate |
+| Unsupported county browser | Outside-coverage FIPS (e.g. `99999`) displayed unsupported status and no estimate |
+| Fort Bend / Montgomery / Brazoria | Each loads a live weather index at its disclosed reference point |
 | AI fallback browser | Opt-in with no configured key showed explicit fallback notice and valid actions |
 | Browser error logs | Empty at final inspection |
 

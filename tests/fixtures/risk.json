@@ -169,10 +169,12 @@
       "temperature_c": 25.0
     }
   ],
+  "daily_outlook": [],
   "evidence": [
     "Peak gust 65 km/h contributes 3 points.",
     "Forecast precipitation 48.0 mm contributes 2 points.",
-    "Temperature range 25–25 °C contributes 0 points."
+    "Temperature range 25–25 °C contributes 0 points.",
+    "Reference weather point: Houston (29.76, -95.37)."
   ],
   "sources": [
     {
@@ -184,7 +186,8 @@
   "method_version": "weather-index-v1",
   "limitations": [
     "Experimental weather index, not an outage probability or an official warning.",
-    "Weather represents a Houston reference point (29.76, -95.37), not every location in Harris County.",
+    "Weather represents a disclosed reference point Houston (29.76, -95.37), not every location in Harris County.",
+    "The scored index uses the next 24 forecast hours only; daily_outlook is unscored context.",
     "Utility conditions and non-weather outages are not included.",
     "Forecast model issue time is not supplied by this endpoint; retrieval time is shown separately."
   ],

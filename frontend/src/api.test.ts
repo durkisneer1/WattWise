@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { RiskSchema, PlanSchema, freshness } from "./api";
+import { RiskSchema, PlanSchema, MethodSchema, freshness } from "./api";
+import { freshnessCue, indexCue, minutesUntilExpiry } from "./lib/motivators";
 import riskFixture from "../../tests/fixtures/risk.json";
 import planFixture from "../../tests/fixtures/plan.json";
 describe("Rust to frontend contracts (synthetic test fixtures only)", () => {
@@ -30,5 +31,24 @@ describe("Rust to frontend contracts (synthetic test fixtures only)", () => {
     const r = RiskSchema.parse(riskFixture);
     expect(freshness({ ...r, status: "unavailable" })).toBe("unavailable");
     expect(freshness({ ...r, status: "unsupported" })).toBe("unsupported");
+  });
+  it("accepts the documented method payload shape", () => {
+    expect(
+      MethodSchema.parse({
+        version: "weather-index-v1",
+        scale: 9,
+        wind: "gust rules",
+        rain: "rain rules",
+        temperature: "temp rules",
+        bands: "band rules",
+      }).version,
+    ).toBe("weather-index-v1");
+  });
+  it("frames motivators without inventing probability", () => {
+    const r = RiskSchema.parse(riskFixture);
+    expect(indexCue(5, 9)).toContain("not an outage probability");
+    expect(indexCue(null, 9)).toBeNull();
+    expect(minutesUntilExpiry(r, Date.parse(r.expires_at) - 120000)).toBe(2);
+    expect(freshnessCue(r, "stale")).toMatch(/expired/i);
   });
 });

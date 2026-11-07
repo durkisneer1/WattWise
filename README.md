@@ -18,13 +18,24 @@ Open http://127.0.0.1:3001. The Rust server serves the built React application a
 
 For frontend development, keep Rust running and run `npm run dev` inside `frontend`. Open http://127.0.0.1:5173; Vite proxies `/api` and `/health` to port 3001. If changing ports, update the Vite proxy and CORS origin accordingly.
 
+### Resident app vs presentation studio
+
+| Entry | What it is |
+| --- | --- |
+| Sidebar **Area outlook** / **My preparation plan** | Live Open-Meteo weather index + household plan (real API). |
+| **Local support** / **Sources and method** | Official directories + live provenance from `/api/method` and the current assessment. |
+| **Hackathon studio** | Clearly labeled presentation samples, demo beats, and fictional household presets. Sample weather is never a silent live-data fallback. |
+
+UI presentation work lives on branch `codex/wattwise-ui-presentation`. Teammate weather/Rust work stays on `codex/wattwise-implementation`. See `AGENTS.md` and `.cursor/skills/wattwise-collab/` before shared edits.
+
 On the implementation machine, Node was absent from PATH; a temporary official runtime was downloaded to `/tmp/node-v22.23.4-linux-x64/bin`. To reuse it while it exists, prepend that directory to PATH. Rust dependencies were tested with `CARGO_HOME=/tmp/wattwise-cargo`. These temporary caches are not repository requirements and may disappear after reboot.
 
 ## Implemented
 
-- React + TypeScript + Vite + Tailwind, responsive layout, keyboard-operable forms, native expandable evidence/checklists, and SVG weather chart with an accessible values table.
+- React + TypeScript + Vite + Tailwind resident shell (dark sidebar / mobile tabs), ink–orange–canvas visual system, county coverage map with disclosed Houston reference point, weather timeline, checklist save/print, and Hackathon studio for labeled samples.
+- Keyboard-operable forms and navigation, native expandable checklists, and SVG weather chart with an accessible values table.
 - Rust Axum API with typed county selection, real Open-Meteo weather, input validation, timeouts, shared refresh cache, explicit unavailable/stale/unsupported states, and expiring assessment IDs.
-- Harris County selection, using a clearly disclosed Houston reference weather point. No address, ZIP geocoder, boundary inference or county-wide weather aggregation.
+- Harris, Fort Bend, Montgomery, and Brazoria (Manvel) county selection, each using a clearly disclosed reference weather point. No address, ZIP geocoder, boundary inference or county-wide weather aggregation.
 - Documented 0–9 weather index. **It is not an outage probability.** Probability is always null; no model accuracy claims are made.
 - Optional household selections, three pending priorities, completion tracking, and reviewed Red Cross/CDC source links. No names, diagnoses, accounts, request-body logs, household persistence or analytics.
 - Optional OpenAI integration selecting approved explanation variants for general actions, strict output validation, concurrency limit and deterministic fallback. Free-form generated safety advice is not displayed.
@@ -37,7 +48,7 @@ On the implementation machine, Node was absent from PATH; a temporary official r
 | Endpoint | Behavior |
 | --- | --- |
 | `GET /health` | Application status and observed dependency/configuration state; does not claim configured AI was verified. |
-| `GET /api/risk?county_fips=48201` | County weather index and provenance. Other valid FIPS codes produce unsupported status. Coordinates are intentionally not accepted. |
+| `GET /api/risk?county_fips=48201` | County weather index and provenance. Supported FIPS: `48201` Harris, `48157` Fort Bend, `48339` Montgomery, `48039` Brazoria. Other valid FIPS codes produce unsupported status. Coordinates are intentionally not accepted. |
 | `POST /api/plan` | Resolves server-issued risk ID and validates optional household fields/completed IDs. Unknown or expired ID: HTTP 409. |
 | `GET /api/actions` | Approved action bank, applicability and source registry. |
 | `GET /api/method` | Index rules and version. |
