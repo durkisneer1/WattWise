@@ -426,8 +426,9 @@ svg {
   z-index: 50;
   padding: 16px;
   pointer-events: none;
-  /* Keep cards fully inside the map frame — clipping was cutting the risk card top. */
   overflow: hidden;
+  container-type: size;
+  container-name: map-overlay;
 }
 
 .map-stage-overlay > * {
@@ -916,30 +917,34 @@ svg {
 
 .hero-card {
   position: absolute;
-  top: 16px;
+  top: auto;
   right: 16px;
   bottom: 16px;
+  left: auto;
   width: min(328px, calc(100% - 32px));
-  /* Inset from every map edge so the top/bottom never get clipped by the cutout. */
-  max-height: none;
+  /* Bottom-right float; cqh caps height inside the map so the top never clips. */
   height: auto;
+  max-height: calc(100cqh - 32px);
+  min-height: 0;
+  margin-top: 0;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
   background: #fffffff5;
   display: flex;
-  gap: 10px;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 6px;
+  align-items: stretch;
   padding: 14px !important;
   border-radius: 14px;
   z-index: 20;
 }
 
 .hero-card-empty {
-  top: auto;
-  bottom: 16px;
-  height: auto;
-  max-height: calc(100% - 32px);
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  max-height: min(200px, calc(100cqh - 32px));
 }
 
 .hero-card h2 {
@@ -1309,7 +1314,13 @@ svg {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  min-height: 100%;
+  /* Do not use min-height: 100% — it forces the floating map card full-stage and clips. */
+  min-height: 0;
+}
+
+.hero-card.risk-card {
+  min-height: 0;
+  max-height: calc(100cqh - 32px);
 }
 
 .risk-card.elevated {
