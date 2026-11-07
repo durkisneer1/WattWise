@@ -1,0 +1,110 @@
+{
+  "risk_id": "synthetic-contract-fixture",
+  "language": "en",
+  "actions": [
+    {
+      "action_id": "lighting",
+      "priority": 3,
+      "title": "Gather lighting and batteries",
+      "explanation": "Keep flashlights and spare batteries easy to find.",
+      "source_ids": [
+        "cdc_power"
+      ],
+      "completed": false,
+      "alternative": "Choose a familiar place for flashlights, battery lanterns and extra batteries.",
+      "applicability": "always; boost if backup_power=no"
+    },
+    {
+      "action_id": "communication",
+      "priority": 4,
+      "title": "Keep a way to stay informed",
+      "explanation": "Prepare phone chargers and a battery-powered radio.",
+      "source_ids": [
+        "cdc_power"
+      ],
+      "completed": false,
+      "alternative": "Keep a power bank and battery-powered weather radio with your supplies.",
+      "applicability": "always"
+    },
+    {
+      "action_id": "supplies",
+      "priority": 5,
+      "title": "Check your essential supplies",
+      "explanation": "Review your food and water supplies before an outage.",
+      "source_ids": [
+        "red_cross"
+      ],
+      "completed": false,
+      "alternative": "Check that your household has food and water ready.",
+      "applicability": "always"
+    }
+  ],
+  "checklist": [
+    {
+      "action_id": "lighting",
+      "priority": 3,
+      "title": "Gather lighting and batteries",
+      "explanation": "Keep flashlights and spare batteries easy to find.",
+      "source_ids": [
+        "cdc_power"
+      ],
+      "completed": false,
+      "alternative": "Choose a familiar place for flashlights, battery lanterns and extra batteries.",
+      "applicability": "always; boost if backup_power=no"
+    },
+    {
+      "action_id": "communication",
+      "priority": 4,
+      "title": "Keep a way to stay informed",
+      "explanation": "Prepare phone chargers and a battery-powered radio.",
+      "source_ids": [
+        "cdc_power"
+      ],
+      "completed": false,
+      "alternative": "Keep a power bank and battery-powered weather radio with your supplies.",
+      "applicability": "always"
+    },
+    {
+      "action_id": "supplies",
+      "priority": 5,
+      "title": "Check your essential supplies",
+      "explanation": "Review your food and water supplies before an outage.",
+      "source_ids": [
+        "red_cross"
+      ],
+      "completed": false,
+      "alternative": "Check that your household has food and water ready.",
+      "applicability": "always"
+    },
+    {
+      "action_id": "contacts",
+      "priority": 6,
+      "title": "Write down important contacts",
+      "explanation": "Keep a paper contact list and agree how your household will reconnect.",
+      "source_ids": [
+        "red_cross"
+      ],
+      "completed": false,
+      "alternative": "Make a paper copy of the contacts you may need if devices lose power.",
+      "applicability": "always"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "red_cross",
+      "name": "American Red Cross · Power Outage Safety",
+      "url": "https://www.redcross.org/get-help/how-to-prepare-for-emergencies/types-of-emergencies/power-outage.html"
+    },
+    {
+      "source_id": "cdc_power",
+      "name": "CDC · Power Sources",
+      "url": "https://www.cdc.gov/prepare-your-health/take-action/power-sources.html"
+    }
+  ],
+  "explanation_mode": "approved_text_fallback",
+  "limitations": [
+    "General preparation guidance; checklist completion is not a safety score.",
+    "Your household answers do not change the area weather index.",
+    "Answers are processed in memory and are not stored in application logs."
+  ]
+}

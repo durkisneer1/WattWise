@@ -1,0 +1,9 @@
+node_modules/
+dist/
+target/
+.env
+.venv/
+__pycache__/
+*.tsbuildinfo
+ml/data/
+ml/models/

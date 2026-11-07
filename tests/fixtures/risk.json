@@ -1,0 +1,192 @@
+{
+  "risk_id": "synthetic-contract-fixture",
+  "county_fips": "48201",
+  "county_name": "Harris County",
+  "geographic_unit": "county",
+  "event_definition": null,
+  "issued_at": null,
+  "assessment_created_at": "2026-11-07T15:00:00Z",
+  "valid_from": "2026-11-07T16:00:00Z",
+  "valid_to": "2026-11-08T16:00:00Z",
+  "fetched_at": "2026-11-07T15:00:00Z",
+  "expires_at": "2026-11-07T15:30:00Z",
+  "mode": "weather_index",
+  "status": "current",
+  "probability": null,
+  "index_value": 5,
+  "index_scale": 9,
+  "risk_band": "elevated",
+  "display_label": "Elevated weather stress",
+  "weather_features": {
+    "max_gust_kmh": 65.0,
+    "precipitation_mm": 48.0,
+    "min_temperature_c": 25.0,
+    "max_temperature_c": 25.0
+  },
+  "hourly": [
+    {
+      "time": "2026-11-07T16:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-07T17:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-07T18:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-07T19:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-07T20:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-07T21:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-07T22:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-07T23:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-08T00:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-08T01:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-08T02:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-08T03:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-08T04:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-08T05:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-08T06:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-08T07:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-08T08:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-08T09:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-08T10:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-08T11:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-08T12:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-08T13:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-08T14:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    },
+    {
+      "time": "2026-11-08T15:00:00Z",
+      "gust_kmh": 65.0,
+      "precipitation_mm": 2.0,
+      "temperature_c": 25.0
+    }
+  ],
+  "evidence": [
+    "Peak gust 65 km/h contributes 3 points.",
+    "Forecast precipitation 48.0 mm contributes 2 points.",
+    "Temperature range 25–25 °C contributes 0 points."
+  ],
+  "sources": [
+    {
+      "source_id": "open_meteo",
+      "name": "Open-Meteo forecast · CC BY 4.0",
+      "url": "https://open-meteo.com/"
+    }
+  ],
+  "method_version": "weather-index-v1",
+  "limitations": [
+    "Experimental weather index, not an outage probability or an official warning.",
+    "Weather represents a Houston reference point (29.76, -95.37), not every location in Harris County.",
+    "Utility conditions and non-weather outages are not included.",
+    "Forecast model issue time is not supplied by this endpoint; retrieval time is shown separately."
+  ],
+  "cached": false
+}
