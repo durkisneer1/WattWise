@@ -257,6 +257,30 @@ export function LocalSupport({ county, onCountyChange }: Props) {
 
       {packs && selected ? (
         <>
+          <section className="support-start panel" aria-label="Start here">
+            <div className="support-section-head">
+              <h3>Start here</h3>
+              <p>
+                Four guided next steps for {selected.name.replace(", Texas", "")}{" "}
+                — still not a verified open/closed inventory.
+              </p>
+            </div>
+            <ol className="support-start-list">
+              {packs.startHere.map((link, i) => (
+                <li key={link.id}>
+                  <span className="support-start-step" aria-hidden>
+                    {i + 1}
+                  </span>
+                  <div>
+                    <a href={link.url} target="_blank" rel="noreferrer">
+                      {link.name} <ExternalLink size={13} aria-hidden />
+                    </a>
+                    <p>{link.detail}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
           <Section
             title="Need help now"
             blurb={`Immediate and county-routed help for ${selected.name}.`}

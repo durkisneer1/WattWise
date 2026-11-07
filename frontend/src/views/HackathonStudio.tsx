@@ -47,10 +47,17 @@ export function HackathonStudio({
   const [appliedPreset, setAppliedPreset] = useState<string | null>(null);
   const [liveCounty, setLiveCounty] = useState<string>(DEMO_COUNTIES[0].fips);
   const [samplesOpen, setSamplesOpen] = useState(false);
+  const [activeHousehold, setActiveHousehold] = useState<string>(
+    HOUSEHOLD_PRESETS[0].id,
+  );
   const householdDelta = householdChecklistDelta(
     HOUSEHOLD_PRESETS[0].household,
     HOUSEHOLD_PRESETS[1].household,
   );
+  const activeActions =
+    activeHousehold === HOUSEHOLD_PRESETS[1].id
+      ? householdDelta.actionsB
+      : householdDelta.actionsA;
 
   function goTour(target: (typeof PRODUCT_TOUR)[number]["target"]) {
     switch (target) {
@@ -178,6 +185,78 @@ export function HackathonStudio({
           </h3>
           <span>Preparation only · area index stays fixed</span>
         </div>
+        <div className="studio-flip" role="group" aria-label="Household flip">
+          {HOUSEHOLD_PRESETS.map((preset) => (
+            <button
+              key={preset.id}
+              type="button"
+              className={
+                "studio-flip-tab" +
+                (activeHousehold === preset.id ? " active" : "")
+              }
+              aria-pressed={activeHousehold === preset.id}
+              onClick={() => {
+                setActiveHousehold(preset.id);
+                onApplyHousehold(preset.household);
+                setAppliedPreset(preset.id);
+              }}
+            >
+              {preset.id === "household-a" ? "Household A" : "Household B"}
+              <small>
+                {preset.id === "household-a"
+                  ? `${householdDelta.countA} actions`
+                  : `${householdDelta.countB} actions`}
+              </small>
+            </button>
+          ))}
+        </div>
+        <div className="studio-morph" aria-live="polite">
+          <p className="studio-morph-lead">
+            <strong>
+              {activeHousehold === "household-a"
+                ? householdDelta.countA
+                : householdDelta.countB}{" "}
+              checklist items
+            </strong>{" "}
+            for{" "}
+            {activeHousehold === "household-a"
+              ? "Household A · more prepared"
+              : "Household B · more exposed"}
+            . Same live weather index — only prep changes.
+          </p>
+          <ul className="studio-morph-list" key={activeHousehold}>
+            {activeActions.map((action) => {
+              const added =
+                activeHousehold === "household-b" &&
+                householdDelta.onlyB.some((x) => x.id === action.id);
+              return (
+                <li
+                  key={action.id}
+                  className={
+                    "studio-morph-item" + (added ? " studio-morph-added" : "")
+                  }
+                >
+                  <CheckCircle2 size={15} aria-hidden />
+                  <span>
+                    {action.title}
+                    {added ? <em> + added for B</em> : null}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+          {activeHousehold === "household-b" &&
+          householdDelta.onlyB.length > 0 ? (
+            <p className="studio-delta-callout">
+              +{householdDelta.onlyB.length} actions because no backup +
+              equipment + no transportation.
+            </p>
+          ) : (
+            <p className="studio-delta-callout muted">
+              Flip to B to see the checklist grow for a more exposed household.
+            </p>
+          )}
+        </div>
         <div className="preset-grid">
           {HOUSEHOLD_PRESETS.map((preset) => (
             <div key={preset.id} className="preset-card">
@@ -194,6 +273,7 @@ export function HackathonStudio({
                 onClick={() => {
                   onApplyHousehold(preset.household);
                   setAppliedPreset(preset.id);
+                  setActiveHousehold(preset.id);
                   onGoPrepare();
                 }}
               >
@@ -208,27 +288,6 @@ export function HackathonStudio({
             </div>
           ))}
         </div>
-        <aside className="studio-delta" aria-label="Household checklist delta">
-          <p>
-            <strong>
-              Checklist size: {householdDelta.countA} → {householdDelta.countB}{" "}
-              items
-            </strong>{" "}
-            when you flip A to B. Area weather index stays fixed.
-          </p>
-          {householdDelta.onlyB.length > 0 ? (
-            <p>
-              B adds:{" "}
-              {householdDelta.onlyB.map((a) => a.title).join(" · ")}
-            </p>
-          ) : null}
-          {householdDelta.onlyA.length > 0 ? (
-            <p>
-              A-only:{" "}
-              {householdDelta.onlyA.map((a) => a.title).join(" · ")}
-            </p>
-          ) : null}
-        </aside>
       </section>
 
       <section className="panel panel-muted">

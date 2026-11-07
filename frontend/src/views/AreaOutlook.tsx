@@ -242,15 +242,20 @@ export function AreaOutlook({
                   {points ? <p className="motivator-line">{points}</p> : null}
                   {drivers ? (
                     <ul
-                      className="driver-chips"
+                      key={risk.risk_id}
+                      className="driver-chips driver-chips-play"
                       aria-label="What drives this index"
                     >
-                      {drivers.map((d) => (
+                      {drivers.map((d, i) => (
                         <li
                           key={d.id}
                           className={
                             "driver-chip" + (d.points > 0 ? " active" : "")
                           }
+                          style={{
+                            ["--driver-delay" as string]: `${i * 90}ms`,
+                            ["--driver-pct" as string]: `${(d.points / d.maxPoints) * 100}%`,
+                          }}
                         >
                           <span className="driver-chip-top">
                             <b>{d.label}</b>
@@ -259,13 +264,7 @@ export function AreaOutlook({
                             </em>
                           </span>
                           <span>{d.detail}</span>
-                          <i
-                            className="driver-meter"
-                            aria-hidden
-                            style={{
-                              ["--driver-pct" as string]: `${(d.points / d.maxPoints) * 100}%`,
-                            }}
-                          />
+                          <i className="driver-meter" aria-hidden />
                         </li>
                       ))}
                     </ul>

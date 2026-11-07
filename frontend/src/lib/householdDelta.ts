@@ -57,6 +57,8 @@ export function householdChecklistDelta(a: Household, b: Household) {
   return {
     countA: left.length,
     countB: right.length,
+    actionsA: left,
+    actionsB: right,
     onlyA,
     onlyB,
     shared: left.filter((x) => rightIds.has(x.id)).length,

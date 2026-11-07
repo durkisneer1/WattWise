@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import L from "leaflet";
-import { MapPin, Crosshair, ExternalLink } from "lucide-react";
+import { MapPin, Crosshair } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 
 type Props = {
@@ -12,10 +12,6 @@ type Props = {
   /** `stage` fills the map-first Area outlook. */
   variant?: "card" | "stage";
 };
-
-function osmUrl(lat: number, lon: number) {
-  return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=11/${lat}/${lon}`;
-}
 
 /** Real OpenStreetMap centered on the disclosed county reference weather point. */
 export function CountyMap({
@@ -132,27 +128,8 @@ export function CountyMap({
                 ? `Live OpenStreetMap centered on the disclosed ${refLabel.toLowerCase()} used by WattWise. Conditions vary across the county. This is not grid telemetry or a radar product.`
                 : "Select a supported county to see coverage scope."}
             </p>
-            {supported ? (
-              <a
-                className="map-external"
-                href={osmUrl(lat, lon)}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Open full map <ExternalLink size={12} aria-hidden />
-              </a>
-            ) : null}
           </div>
         </figcaption>
-      ) : supported ? (
-        <a
-          className="map-external map-external-stage"
-          href={osmUrl(lat, lon)}
-          target="_blank"
-          rel="noreferrer"
-        >
-          Open full OpenStreetMap <ExternalLink size={12} aria-hidden />
-        </a>
       ) : null}
     </figure>
   );

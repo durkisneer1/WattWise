@@ -111,6 +111,7 @@ export function buildSupportLinks(
   fips: string,
   anchor: SupportAnchor,
 ): {
+  startHere: SupportLink[];
   urgent: SupportLink[];
   power: SupportLink[];
   nearby: SupportLink[];
@@ -120,21 +121,60 @@ export function buildSupportLinks(
   const place = pack?.shortName ?? "Houston area";
   const near = `${anchor.lat.toFixed(3)}, ${anchor.lon.toFixed(3)}`;
 
+  const oem: SupportLink | null = pack
+    ? {
+        id: "oem",
+        name: pack.oemName,
+        url: pack.oemUrl,
+        detail: pack.oemPhone
+          ? `Official county emergency management. Phone ${pack.oemPhone}.`
+          : "Official county emergency management and heat/storm guidance.",
+        kind: "agency",
+      }
+    : null;
+
+  const centerpoint: SupportLink = {
+    id: "centerpoint-outage",
+    name: "CenterPoint Energy outage map",
+    url: centerpointOutageUrl(anchor.lat, anchor.lon),
+    detail: `Live outage tracker for ${pack?.utilityLabel ?? "Greater Houston electric service"}, opened near ${anchor.label}. Restoration notes come from the utility — not WattWise.`,
+    kind: "outage",
+  };
+
+  const twoEleven: SupportLink = {
+    id: "211",
+    name: "Call 211 Texas for local help",
+    url: "https://www.211texas.org/",
+    detail: `Live operators can route ${place} residents to food, shelter, utility, and cooling help. Hours and programs vary.`,
+    kind: "call",
+  };
+
+  const coolingSearch: SupportLink = {
+    id: "search-cooling",
+    name: "Search cooling centers near your focus point",
+    url: mapsSearch(`cooling center near ${place}`, anchor.lat, anchor.lon),
+    detail: `Map search centered on ${anchor.label} (${near}). Results are not WattWise-verified open facilities.`,
+    kind: "search",
+  };
+
+  /** Pitch-friendly path — OEM → utility → 211 → cooling search. Not open/closed claims. */
+  const startHere: SupportLink[] = [
+    ...(oem ? [oem] : []),
+    centerpoint,
+    twoEleven,
+    coolingSearch,
+  ];
+
   const urgent: SupportLink[] = [
     {
       id: "911",
       name: "Call 911 for life-threatening emergencies",
       url: "tel:911",
-      detail: "Immediate danger, medical emergency, or downed live wires with people at risk.",
+      detail:
+        "Immediate danger, medical emergency, or downed live wires with people at risk.",
       kind: "call",
     },
-    {
-      id: "211",
-      name: "Call 211 Texas for local help",
-      url: "https://www.211texas.org/",
-      detail: `Live operators can route ${place} residents to food, shelter, utility, and cooling help. Hours and programs vary.`,
-      kind: "call",
-    },
+    twoEleven,
     {
       id: "findhelp",
       name: `FindHelp resources near ${place}`,
@@ -154,13 +194,7 @@ export function buildSupportLinks(
   ];
 
   const power: SupportLink[] = [
-    {
-      id: "centerpoint-outage",
-      name: "CenterPoint Energy outage map",
-      url: centerpointOutageUrl(anchor.lat, anchor.lon),
-      detail: `Live outage tracker for ${pack?.utilityLabel ?? "Greater Houston electric service"}, opened near ${anchor.label}. Restoration notes come from the utility — not WattWise.`,
-      kind: "outage",
-    },
+    centerpoint,
     {
       id: "centerpoint-action",
       name: "CenterPoint Action Center",
@@ -178,13 +212,7 @@ export function buildSupportLinks(
   ];
 
   const nearby: SupportLink[] = [
-    {
-      id: "search-cooling",
-      name: "Search cooling centers near your focus point",
-      url: mapsSearch(`cooling center near ${place}`, anchor.lat, anchor.lon),
-      detail: `Map search centered on ${anchor.label} (${near}). Results are not WattWise-verified open facilities.`,
-      kind: "search",
-    },
+    coolingSearch,
     {
       id: "search-library",
       name: "Search public libraries nearby",
@@ -197,34 +225,21 @@ export function buildSupportLinks(
       id: "search-pharmacy",
       name: "Search pharmacies & groceries nearby",
       url: mapsSearch(`pharmacy grocery near ${place}`, anchor.lat, anchor.lon),
-      detail: "Useful for ice, batteries, and supplies. Hours change during outages.",
-      kind: "search",
-    },
-    {
-      id: "osm-here",
-      name: "Open map at your focus point",
-      url: `https://www.openstreetmap.org/?mlat=${anchor.lat}&mlon=${anchor.lon}#map=12/${anchor.lat}/${anchor.lon}`,
-      detail: `Pinned to ${anchor.label}. Use this when sharing a meeting point or checking roads.`,
+      detail:
+        "Useful for ice, batteries, and supplies. Hours change during outages.",
       kind: "search",
     },
   ];
 
   const agencies: SupportLink[] = [];
   if (pack) {
-    agencies.push({
-      id: "oem",
-      name: pack.oemName,
-      url: pack.oemUrl,
-      detail: pack.oemPhone
-        ? `Official county emergency management. Phone ${pack.oemPhone}.`
-        : "Official county emergency management and heat/storm guidance.",
-      kind: "agency",
-    });
+    if (oem) agencies.push(oem);
     agencies.push({
       id: "alerts",
       name: pack.alertName,
       url: pack.alertUrl,
-      detail: "Sign up for alerts and read the latest county guidance before you travel.",
+      detail:
+        "Sign up for alerts and read the latest county guidance before you travel.",
       kind: "agency",
     });
     if (pack.cityHelp) {
@@ -238,7 +253,7 @@ export function buildSupportLinks(
     }
   }
 
-  return { urgent, power, nearby, agencies };
+  return { startHere, urgent, power, nearby, agencies };
 }
 
 /** Resolve a Texas city or ZIP to coordinates via Open-Meteo geocoding. */
