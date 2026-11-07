@@ -1,5 +1,6 @@
 import type { CountyCoverage } from "./coverage";
 import { COUNTIES, coverageFor } from "./coverage";
+import { centerpointOutageUrl } from "./motivators";
 
 export type SupportAnchor = {
   label: string;
@@ -156,7 +157,7 @@ export function buildSupportLinks(
     {
       id: "centerpoint-outage",
       name: "CenterPoint Energy outage map",
-      url: `https://gisoutagetracker.azurewebsites.net/#${Number(anchor.lat).toFixed(4)},${Number(anchor.lon).toFixed(4)},12`,
+      url: centerpointOutageUrl(anchor.lat, anchor.lon),
       detail: `Live outage tracker for ${pack?.utilityLabel ?? "Greater Houston electric service"}, opened near ${anchor.label}. Restoration notes come from the utility — not WattWise.`,
       kind: "outage",
     },

@@ -68,10 +68,9 @@ export function AreaOutlook({
   const points = current
     ? indexCue(risk?.index_value ?? null, risk?.index_scale ?? null)
     : null;
-  const drivers =
-    current && horizon === "24h"
-      ? indexDrivers(risk?.weather_features ?? null)
-      : null;
+  const drivers = current
+    ? indexDrivers(risk?.weather_features ?? null)
+    : null;
   const showMap = Boolean(selected);
   const mapLat = selected?.lat ?? 29.76;
   const mapLon = selected?.lon ?? -95.37;
@@ -207,22 +206,18 @@ export function AreaOutlook({
                 </span>
               </div>
               <div className="risk-label">
-                {horizon === "24h" && current
-                  ? "Experimental weather index"
-                  : horizon === "7d"
-                    ? "7-day outlook"
-                    : "Assessment status"}
+                {current
+                  ? horizon === "7d"
+                    ? "7-day outlook · 24h index still applies"
+                    : "Experimental weather index"
+                  : "Assessment status"}
               </div>
               <h2>
-                {horizon === "7d"
-                  ? current
-                    ? "Daily weather strip — not a weekly score."
-                    : risk.display_label
-                  : status === "stale"
-                    ? "This forecast needs a refresh."
-                    : risk.display_label}
+                {status === "stale"
+                  ? "This forecast needs a refresh."
+                  : risk.display_label}
               </h2>
-              {horizon === "24h" && current ? (
+              {current ? (
                 <>
                   <div className="score">
                     <strong>{risk.index_value}</strong>
@@ -246,7 +241,10 @@ export function AreaOutlook({
                   </div>
                   {points ? <p className="motivator-line">{points}</p> : null}
                   {drivers ? (
-                    <ul className="driver-chips" aria-label="What drives this index">
+                    <ul
+                      className="driver-chips"
+                      aria-label="What drives this index"
+                    >
                       {drivers.map((d) => (
                         <li
                           key={d.id}
@@ -273,14 +271,11 @@ export function AreaOutlook({
                     </ul>
                   ) : null}
                   <p className="risk-blurb">
-                    Not an outage probability. Stress band: {risk.risk_band}.
+                    {horizon === "7d"
+                      ? "Index stays 24h-only. The strip below is unscored daily weather — not a weekly outage score."
+                      : `Not an outage probability. Stress band: ${risk.risk_band}.`}
                   </p>
                 </>
-              ) : horizon === "7d" && current ? (
-                <p className="risk-blurb">
-                  Seven daily Open-Meteo summaries at the disclosed reference
-                  point. No weekly stress score is computed.
-                </p>
               ) : (
                 <p className="risk-blurb">
                   {status === "unsupported"
@@ -300,17 +295,19 @@ export function AreaOutlook({
                   {cue}
                 </p>
               ) : null}
-              {horizon === "24h" ? (
-                <div className="forecast-window">
-                  <span>24h window · Central Time</span>
-                  <b>
-                    {formatCentral(risk.valid_from)}
-                    {risk.valid_to ? (
-                      <> → {formatCentral(risk.valid_to)}</>
-                    ) : null}
-                  </b>
-                </div>
-              ) : null}
+              <div className="forecast-window">
+                <span>
+                  {horizon === "7d"
+                    ? "Scored window still 24h · Central Time"
+                    : "24h window · Central Time"}
+                </span>
+                <b>
+                  {formatCentral(risk.valid_from)}
+                  {risk.valid_to ? (
+                    <> → {formatCentral(risk.valid_to)}</>
+                  ) : null}
+                </b>
+              </div>
               <div className="dock-actions">
                 <button
                   type="button"
@@ -321,7 +318,7 @@ export function AreaOutlook({
                   <RefreshCw size={15} className={busy ? "spin" : ""} />{" "}
                   Refresh
                 </button>
-                {current && horizon === "24h" ? (
+                {current ? (
                   <button
                     type="button"
                     className="primary primary-accent"
@@ -338,104 +335,100 @@ export function AreaOutlook({
 
       {risk ? (
         <section className="insight-rail">
+          <div className="metric-strip">
+            {[
+              {
+                icon: <Wind />,
+                label: horizon === "7d" ? "24h peak gust" : "Peak gust",
+                value: current ? risk.weather_features?.max_gust_kmh : null,
+                unit: "km/h",
+              },
+              {
+                icon: <Droplets />,
+                label: horizon === "7d" ? "24h precip" : "Precipitation",
+                value: current
+                  ? risk.weather_features?.precipitation_mm
+                  : null,
+                unit: "mm",
+              },
+              {
+                icon: <Thermometer />,
+                label: horizon === "7d" ? "24h high temp" : "High temp",
+                value: current
+                  ? risk.weather_features?.max_temperature_c
+                  : null,
+                unit: "°C",
+              },
+            ].map((m) => (
+              <div className="metric-tile" key={m.label}>
+                {m.icon}
+                <div>
+                  <span>{m.label}</span>
+                  <strong>
+                    {m.value != null ? m.value.toFixed(1) : "—"}{" "}
+                    <small>{m.unit}</small>
+                  </strong>
+                </div>
+              </div>
+            ))}
+            <div className="metric-tile source-tile">
+              <Info size={18} />
+              <div>
+                <span>Provenance</span>
+                <strong>
+                  Open-Meteo · {formatCentral(risk.fetched_at)}
+                </strong>
+              </div>
+            </div>
+          </div>
+
+          <div className="panel utility-panel">
+            <div className="plan-heading">
+              <h3>Utility context</h3>
+              <span>CenterPoint · not WattWise</span>
+            </div>
+            <p>
+              Weather stress is not the grid. Open the utility outage map near
+              this reference point — restoration notes stay on CenterPoint’s
+              site.
+            </p>
+            <a
+              className="primary"
+              href={centerpointOutageUrl(mapLat, mapLon)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Open CenterPoint outage map
+            </a>
+          </div>
+
           {horizon === "24h" ? (
-            <>
-              <div className="metric-strip">
-                {[
-                  {
-                    icon: <Wind />,
-                    label: "Peak gust",
-                    value: current ? risk.weather_features?.max_gust_kmh : null,
-                    unit: "km/h",
-                  },
-                  {
-                    icon: <Droplets />,
-                    label: "Precipitation",
-                    value: current
-                      ? risk.weather_features?.precipitation_mm
-                      : null,
-                    unit: "mm",
-                  },
-                  {
-                    icon: <Thermometer />,
-                    label: "High temp",
-                    value: current
-                      ? risk.weather_features?.max_temperature_c
-                      : null,
-                    unit: "°C",
-                  },
-                ].map((m) => (
-                  <div className="metric-tile" key={m.label}>
-                    {m.icon}
-                    <div>
-                      <span>{m.label}</span>
-                      <strong>
-                        {m.value != null ? m.value.toFixed(1) : "—"}{" "}
-                        <small>{m.unit}</small>
-                      </strong>
-                    </div>
-                  </div>
-                ))}
-                <div className="metric-tile source-tile">
+            <div className="panel timeline-panel">
+              <div className="plan-heading">
+                <h3>Next 24 hours</h3>
+                <span>Gust line · rain bars</span>
+              </div>
+              {current && risk.hourly.length > 0 ? (
+                <WeatherTimeline
+                  hourly={risk.hourly}
+                  validFrom={risk.valid_from}
+                />
+              ) : (
+                <div className="no-weather">
                   <Info size={18} />
-                  <div>
-                    <span>Provenance</span>
-                    <strong>
-                      Open-Meteo · {formatCentral(risk.fetched_at)}
-                    </strong>
-                  </div>
+                  <p>
+                    {status === "stale"
+                      ? "Old weather values stay hidden until you refresh."
+                      : "Hourly inputs appear after a supported forecast loads."}
+                  </p>
                 </div>
-              </div>
-
-              <div className="panel utility-panel">
-                <div className="plan-heading">
-                  <h3>Utility context</h3>
-                  <span>CenterPoint · not WattWise</span>
-                </div>
-                <p>
-                  Weather stress is not the grid. Open the utility outage map
-                  near this reference point — restoration notes stay on
-                  CenterPoint’s site.
-                </p>
-                <a
-                  className="primary"
-                  href={centerpointOutageUrl(mapLat, mapLon)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Open CenterPoint outage map
-                </a>
-              </div>
-
-              <div className="panel timeline-panel">
-                <div className="plan-heading">
-                  <h3>Next 24 hours</h3>
-                  <span>Gust line · rain bars</span>
-                </div>
-                {current && risk.hourly.length > 0 ? (
-                  <WeatherTimeline
-                    hourly={risk.hourly}
-                    validFrom={risk.valid_from}
-                  />
-                ) : (
-                  <div className="no-weather">
-                    <Info size={18} />
-                    <p>
-                      {status === "stale"
-                        ? "Old weather values stay hidden until you refresh."
-                        : "Hourly inputs appear after a supported forecast loads."}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </>
-          ) : null}
-
-          {horizon === "7d" ? (
+              )}
+            </div>
+          ) : (
             <div className="panel timeline-panel">
               <div className="plan-heading">
                 <h3>Next 7 days</h3>
-                <span>Unscored daily outlook</span>
+                <span>Unscored daily outlook · index above stays 24h</span>
               </div>
               {current && risk.daily_outlook.length > 0 ? (
                 <div className="daily-strip" role="list">
@@ -470,7 +463,7 @@ export function AreaOutlook({
                 </div>
               )}
             </div>
-          ) : null}
+          )}
         </section>
       ) : null}
     </div>

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { RiskSchema, PlanSchema, MethodSchema, freshness } from "./api";
 import {
+  centerpointOutageUrl,
   freshnessCue,
   indexCue,
   indexDrivers,
@@ -73,5 +74,17 @@ describe("Rust to frontend contracts (synthetic test fixtures only)", () => {
     expect(delta.onlyB.map((a) => a.id)).toEqual(
       expect.arrayContaining(["equipment_plan", "support_network"]),
     );
+  });
+  it("builds a CenterPoint tracker URL with a location view payload", () => {
+    const url = centerpointOutageUrl(29.76, -95.37);
+    expect(url).toContain("https://tracker.centerpointenergy.com/map/texas?");
+    expect(url).toContain("location=");
+    const encoded = new URL(url).searchParams.get("location");
+    expect(encoded).toBeTruthy();
+    const view = JSON.parse(atob(encoded!));
+    expect(view.view.latitude).toBe(29.76);
+    expect(view.view.longitude).toBe(-95.37);
+    expect(view.view.zoom).toBe(11);
+    expect(view.view.eventId).toBeNull();
   });
 });

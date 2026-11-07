@@ -79,8 +79,20 @@ export function indexDrivers(
   ];
 }
 
-export function centerpointOutageUrl(lat: number, lon: number) {
-  // CenterPoint's tracker is a full GIS app; open it with a maps query hint nearby.
-  // Restoration times still come only from the utility — never invented here.
-  return `https://gisoutagetracker.azurewebsites.net/#${lat.toFixed(4)},${lon.toFixed(4)},12`;
+/** Official Houston-area Outage Tracker (old Azure GIS host is gone). */
+export function centerpointOutageUrl(lat: number, lon: number, zoom = 11) {
+  // CenterPoint expects a base64 JSON view payload in ?location=
+  // (same shape the tracker writes when you pan/zoom). Restoration times
+  // still come only from the utility — never invented here.
+  const payload = JSON.stringify({
+    view: {
+      latitude: Number(lat.toFixed(4)),
+      longitude: Number(lon.toFixed(4)),
+      zoom,
+      eventId: null,
+    },
+  });
+  // Prefer raw base64 (no URI escaping) — matches CenterPoint's own links.
+  const location = btoa(payload);
+  return `https://tracker.centerpointenergy.com/map/texas?location=${location}`;
 }
