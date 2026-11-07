@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Zap,
   MapPinned,
@@ -68,6 +68,15 @@ type Props = {
 
 export function AppShell({ view, onNavigate, children, statusNote }: Props) {
   const active = NAV.find((n) => n.id === view);
+
+  useEffect(() => {
+    // New primary view should open at the top — don't keep the previous tab's scroll.
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    const main = document.getElementById("main");
+    if (main) main.scrollTop = 0;
+  }, [view]);
 
   return (
     <div className="app-shell">

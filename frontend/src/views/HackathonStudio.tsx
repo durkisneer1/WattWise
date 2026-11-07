@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AlertTriangle,
   Presentation,
@@ -60,6 +60,12 @@ export function HackathonStudio({
     activeHousehold === HOUSEHOLD_PRESETS[1].id
       ? householdDelta.actionsB
       : householdDelta.actionsA;
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [studioTab, sample.id]);
 
   function goTour(target: (typeof PRODUCT_TOUR)[number]["target"]) {
     switch (target) {
