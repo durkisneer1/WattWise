@@ -57,7 +57,7 @@ export function CountyMap({
     const marker = L.marker([lat, lon], { icon })
       .addTo(map)
       .bindPopup(
-        `<strong>${refLabel}</strong><br/>${lat.toFixed(2)}° N · ${Math.abs(lon).toFixed(2)}° W<br/><span style="font-size:12px;color:#5f7270">Open-Meteo forecast point for county guidance — not county-wide weather.</span>`,
+        `<strong>${refLabel}</strong><br/>${lat.toFixed(2)}° N · ${Math.abs(lon).toFixed(2)}° W<br/><span style="font-size:12px;color:#5f7270">Forecast reference point for county guidance — not county-wide weather.</span>`,
       );
     if (openPopup) marker.openPopup();
 

@@ -367,7 +367,7 @@ svg {
 }
 
 .workspace-main {
-  padding: 20px 28px 56px;
+  padding: 16px 28px 48px;
   max-width: none;
 }
 
@@ -379,15 +379,17 @@ svg {
 .area-stage {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
 }
 
 .map-stage {
   position: relative;
+  /* Explicit height so absolute overlay/cards stay inside the map window. */
+  height: clamp(560px, 68vh, 720px);
   min-height: 560px;
-  /* Cards float above the map window — do not clip them with the stage border. */
   overflow: visible;
   background: transparent;
+  isolation: isolate;
 }
 
 .map-stage-canvas {
@@ -415,12 +417,11 @@ svg {
 .map-stage-overlay {
   position: absolute;
   inset: 0;
-  /* Above the map cutout; below the sticky Studio title bar. */
+  /* Above map cutout; below sticky Studio / Area title bar. */
   z-index: 50;
-  padding: 14px;
+  padding: 16px;
   pointer-events: none;
-  overflow: visible;
-  min-height: 620px;
+  overflow: hidden;
 }
 
 .map-stage-overlay > * {
@@ -436,9 +437,9 @@ svg {
 
 .assess-dock {
   position: absolute;
-  top: 14px;
-  left: 14px;
-  width: min(300px, calc(100% - 28px));
+  top: 16px;
+  left: 16px;
+  width: min(292px, calc(100% - 32px));
   background: #fffffff7;
   padding: 14px !important;
   /* Above the floating risk card. */
@@ -902,13 +903,14 @@ svg {
 
 .hero-card {
   position: absolute;
-  right: 14px;
-  bottom: 14px;
-  width: min(340px, calc(100% - 28px));
-  /* Stay below the dock so we float on the map without covering controls. */
-  max-height: calc(100% - 168px);
+  right: 16px;
+  bottom: 16px;
+  width: min(328px, calc(100% - 32px));
+  /* Fit under the dock; scroll inside the card — never spill into metrics. */
+  max-height: calc(100% - 176px);
   overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
   background: #fffffff5;
   display: flex;
   gap: 10px;
@@ -943,11 +945,25 @@ svg {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-width: 340px;
+  max-width: 328px;
 }
 
 .float-card.risk-card h2 {
   font-size: 18px;
+}
+
+.float-card .driver-chips {
+  margin-top: 8px;
+  gap: 5px;
+}
+
+.float-card .driver-chip {
+  padding: 7px 8px;
+}
+
+.float-card .dock-actions {
+  margin-top: 10px;
+  padding-bottom: 2px;
 }
 
 .dock-actions {
@@ -959,6 +975,8 @@ svg {
 }
 
 .insight-rail {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -2125,13 +2143,27 @@ td {
     grid-template-columns: 1fr 1fr;
   }
 
+  .map-stage {
+    height: auto;
+    min-height: 0;
+  }
+
+  .map-stage-canvas {
+    position: relative;
+    inset: auto;
+    min-height: 360px;
+    height: 420px;
+  }
+
   .map-stage-overlay {
     position: relative;
     inset: auto;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    min-height: auto;
+    overflow: visible;
+    padding: 0;
+    margin-top: 12px;
   }
 
   .assess-dock,
@@ -2144,10 +2176,6 @@ td {
     width: 100%;
     max-width: none;
     max-height: none;
-  }
-
-  .map-stage {
-    min-height: 720px;
   }
 }
 
@@ -2235,16 +2263,10 @@ td {
     max-width: 140px;
   }
 
-  .map-stage {
-    min-height: 640px;
-  }
-
   .map-stage-canvas {
     border-radius: 16px;
-  }
-
-  .map-stage-overlay {
-    padding: 12px;
+    height: 320px;
+    min-height: 280px;
   }
 }
 
@@ -2574,7 +2596,7 @@ td {
   display: flex;
   gap: 10px;
   align-items: flex-start;
-  margin-bottom: 12px;
+  margin-bottom: 0;
   padding: 12px 14px;
   border-radius: 12px;
   background: #fff7ef;
@@ -2597,7 +2619,16 @@ td {
 }
 
 .sample-area-stage .map-stage {
-  min-height: 640px;
+  height: clamp(560px, 68vh, 720px);
+}
+
+.studio-sample-stage {
+  gap: 16px;
+}
+
+.support-layout,
+.stack.studio {
+  gap: 18px;
 }
 
 @media (max-width: 720px) {

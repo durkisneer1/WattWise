@@ -181,7 +181,7 @@ export function AreaOutlook({
                 </h2>
                 <p>
                   {busy
-                    ? `Pulling Open-Meteo for the ${selected?.placeHint ?? "selected"} point.`
+                    ? `Pulling the latest forecast for the ${selected?.placeHint ?? "selected"} point.`
                     : "Choose a county, then Check area for a live weather-stress index."}
                 </p>
               </div>
@@ -383,10 +383,8 @@ export function AreaOutlook({
             <div className="metric-tile source-tile">
               <Info size={18} />
               <div>
-                <span>Provenance</span>
-                <strong>
-                  Open-Meteo · {formatCentral(risk.fetched_at)}
-                </strong>
+                <span>Retrieved</span>
+                <strong>{formatCentral(risk.fetched_at)}</strong>
               </div>
             </div>
           </div>

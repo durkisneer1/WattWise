@@ -230,8 +230,8 @@ export function SampleAreaPreview({ sample, onGoPrepare }: Props) {
           <div className="metric-tile source-tile">
             <Info size={18} />
             <div>
-              <span>Provenance</span>
-              <strong>Studio sample · not Open-Meteo live</strong>
+              <span>Source</span>
+              <strong>Studio sample · presentation only</strong>
             </div>
           </div>
         </div>
